@@ -1,0 +1,2177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>root@ethhack:~$ quiz</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Share+Tech+Mono&display=swap');
+  
+  :root {
+    --bg: #030706;
+    --bg-panel: rgba(8, 16, 13, 0.85);
+    --bg-raised: rgba(14, 27, 23, 0.9);
+    --line: rgba(30, 62, 50, 0.6);
+    --line-glow: rgba(62, 242, 168, 0.15);
+    --green: #3ef2a8;
+    --green-dim: #108558;
+    --green-glow: rgba(62, 242, 168, 0.25);
+    --amber: #ffb454;
+    --amber-glow: rgba(255, 180, 84, 0.25);
+    --red: #ff5a6e;
+    --red-glow: rgba(255, 90, 110, 0.25);
+    --blue: #3b82f6;
+    --purple: #8b5cf6;
+    --text: #e1f7ed;
+    --text-dim: #608c7c;
+    --text-dark: #04140d;
+    --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+    --font-display: 'Share Tech Mono', 'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; min-height: 100vh; background: var(--bg); color: var(--text); font-family: var(--font-mono); font-size: 14px; line-height: 1.5; }
+
+  /* Ambient Cyber Glow Background & Scanlines */
+  body {
+    background: 
+      radial-gradient(ellipse 800px 400px at 10% -10%, rgba(62, 242, 168, 0.08), transparent 70%),
+      radial-gradient(ellipse 600px 400px at 90% 10%, rgba(255, 180, 84, 0.05), transparent 70%),
+      radial-gradient(circle at 50% 50%, #050a09, #030706);
+    background-attachment: fixed;
+    padding-bottom: 60px;
+  }
+  
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      to bottom, rgba(255, 255, 255, 0.015) 0px, rgba(255, 255, 255, 0.015) 1px,
+      transparent 1px, transparent 3px
+    );
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  ::selection { background: var(--green-dim); color: #04140d; }
+
+  /* Scrollbar Customization */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--green-dim); }
+
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 20px 20px 0; }
+
+  /* Topbar */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 16px; margin-bottom: 24px;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand .dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 10px var(--green), 0 0 20px var(--green);
+    animation: pulseGlow 2s infinite ease-in-out;
+  }
+  .brand-text { font-family: var(--font-display); font-size: 18px; letter-spacing: 0.5px; color: var(--text); }
+  .brand-text b { color: var(--green); text-shadow: 0 0 5px var(--green-glow); }
+  .brand-sub { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+  
+  .topbar-actions { display: flex; align-items: center; gap: 14px; }
+  .path { font-size: 12px; color: var(--text-dim); font-family: var(--font-mono); }
+  .path .seg { color: var(--amber); }
+
+  /* Audio Switcher */
+  .audio-toggle {
+    background: transparent; border: 1px solid var(--line); color: var(--text-dim);
+    font-family: var(--font-mono); font-size: 11px; padding: 6px 12px; border-radius: 4px;
+    cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;
+  }
+  .audio-toggle:hover { border-color: var(--green); color: var(--green); box-shadow: 0 0 8px var(--green-glow); }
+  .audio-toggle.active { border-color: var(--green); color: var(--green); background: rgba(62, 242, 168, 0.05); }
+
+  /* View switch navigation */
+  .crumbs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .crumb-btn {
+    background: transparent; border: 1px solid var(--line); color: var(--text-dim);
+    font-family: var(--font-mono); font-size: 12px; padding: 6px 14px; border-radius: 4px;
+    cursor: pointer; transition: all 0.2s ease;
+  }
+  .crumb-btn:hover { border-color: var(--green-dim); color: var(--green); }
+  .crumb-btn.active { background: rgba(62, 242, 168, 0.08); border-color: var(--green); color: var(--green); box-shadow: 0 0 8px var(--green-glow); }
+
+  h1 { font-family: var(--font-display); font-size: 24px; margin: 0 0 6px; color: var(--text); font-weight: normal; letter-spacing: 0.5px; }
+  h1 .prompt { color: var(--green); text-shadow: 0 0 5px var(--green-glow); }
+  .subhead { color: var(--text-dim); font-size: 13.5px; margin: 0 0 24px; font-family: var(--font-mono); }
+
+  /* ================= NEW DASHBOARD VIEW ================= */
+  /* Agent Dashboard Hero Section */
+  .hero-panel {
+    display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px; margin-bottom: 24px;
+  }
+  @media (max-width: 768px) {
+    .hero-panel { grid-template-columns: 1fr; }
+  }
+
+  .agent-profile {
+    background: var(--bg-panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 20px; display: flex; flex-direction: column; justify-content: space-between;
+    position: relative; overflow: hidden; backdrop-filter: blur(12px);
+  }
+  .agent-profile::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--green);
+  }
+  .agent-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+  .agent-rank-badge {
+    font-size: 48px; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center;
+    background: var(--bg-raised); border: 1px solid var(--line); border-radius: 50%;
+    box-shadow: 0 0 10px var(--line-glow);
+  }
+  .agent-title { font-family: var(--font-display); font-size: 20px; color: var(--green); text-shadow: 0 0 5px var(--green-glow); }
+  .agent-subtitle { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+  
+  .xp-progress-box { margin-top: 14px; }
+  .xp-bar-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-dim); margin-bottom: 6px; }
+  .xp-bar-outer { height: 8px; background: #050b09; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
+  .xp-bar-inner { height: 100%; background: linear-gradient(90deg, var(--green-dim), var(--green)); width: 0%; transition: width 0.6s cubic-bezier(0.1, 0.8, 0.2, 1); }
+
+  .diagnostics-console {
+    background: var(--bg-panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 20px; backdrop-filter: blur(12px);
+  }
+  .console-title { font-family: var(--font-display); font-size: 13px; color: var(--text-dim); margin-bottom: 16px; letter-spacing: 1px; }
+  .stats-subgrid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px;
+  }
+  .stat-card {
+    background: var(--bg-raised); border: 1px solid var(--line); border-radius: 6px;
+    padding: 12px 16px; text-align: left; position: relative; transition: all 0.2s ease;
+  }
+  .stat-card:hover { border-color: var(--line-glow); transform: translateY(-1px); }
+  .stat-card .label { font-size: 10px; color: var(--text-dim); letter-spacing: 0.5px; text-transform: uppercase; }
+  .stat-card .val { font-family: var(--font-display); font-size: 20px; font-weight: bold; color: var(--text); margin-top: 6px; }
+  .stat-card .val b { color: var(--green); }
+  .stat-card.goal-card::after {
+    content: "●"; position: absolute; top: 10px; right: 12px; font-size: 8px; color: var(--red);
+  }
+  .stat-card.goal-card.completed::after {
+    color: var(--green); text-shadow: 0 0 5px var(--green);
+  }
+
+  /* Dashboard Panels Split: Left Units, Right Achievements */
+  .dash-split {
+    display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 28px;
+  }
+  @media (max-width: 900px) {
+    .dash-split { grid-template-columns: 1fr; }
+  }
+
+  .dash-grid {
+    display: grid; grid-template-columns: 1fr; gap: 14px;
+  }
+  .unit-card {
+    background: var(--bg-panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 18px 20px; position: relative; overflow: hidden; cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1); backdrop-filter: blur(12px);
+  }
+  .unit-card:hover {
+    border-color: var(--green); transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(62, 242, 168, 0.1);
+  }
+  .unit-card::after {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--bar-color, var(--line));
+  }
+  
+  .unit-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .u-id { font-family: var(--font-display); font-size: 12px; color: var(--text-dim); letter-spacing: 1px; }
+  .u-status { font-size: 10px; padding: 2px 8px; border-radius: 4px; border: 1px solid; letter-spacing: 0.5px; font-family: var(--font-mono); }
+  .u-status.locked { color: var(--text-dim); border-color: var(--line); background: rgba(255,255,255,0.02); }
+  .u-status.done { color: var(--green); border-color: var(--green-dim); background: rgba(62, 242, 168, 0.05); box-shadow: 0 0 5px var(--green-glow); }
+  .u-status.progress { color: var(--amber); border-color: #8c642e; background: rgba(255, 180, 84, 0.05); }
+
+  .u-title-row { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+  .u-icon { font-size: 20px; }
+  .u-title { font-family: var(--font-display); font-size: 17px; color: var(--text); font-weight: normal; }
+  .u-tag { font-size: 12px; color: var(--text-dim); margin-bottom: 12px; font-family: var(--font-mono); }
+  
+  .u-progress-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .u-score-display { font-family: var(--font-display); font-size: 14px; color: var(--text); }
+  .u-score-display span { color: var(--text-dim); font-size: 12px; }
+  .u-bar { height: 4px; border-radius: 2px; background: #050b09; overflow: hidden; border: 1px solid rgba(255,255,255,0.02); margin-bottom: 12px; }
+  .u-bar-fill { height: 100%; background: linear-gradient(90deg, var(--green-dim), var(--green)); width: 0%; transition: width 0.5s ease; }
+
+  .u-footer { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--text-dim); border-top: 1px solid rgba(255,255,255,0.02); padding-top: 10px; }
+  .u-badge-detail { display: flex; gap: 12px; }
+  .u-badge-detail span { display: flex; align-items: center; gap: 4px; }
+  .u-difficulty { font-weight: bold; }
+  .u-difficulty.easy { color: var(--green); }
+  .u-difficulty.medium { color: var(--amber); }
+  .u-difficulty.hard { color: var(--red); }
+  .u-cta { color: var(--green); font-family: var(--font-display); }
+  .u-cta::before { content: "▸ "; }
+
+  /* Achievements Panel styling */
+  .achievements-panel {
+    background: var(--bg-panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 20px; display: flex; flex-direction: column; backdrop-filter: blur(12px);
+    max-height: 520px;
+  }
+  .achievements-list {
+    overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 4px;
+  }
+  .ach-badge {
+    background: var(--bg-raised); border: 1px solid var(--line); border-radius: 6px;
+    padding: 10px 12px; display: flex; align-items: center; gap: 12px; position: relative;
+    transition: all 0.2s ease;
+  }
+  .ach-badge.unlocked {
+    border-color: var(--amber); box-shadow: 0 0 8px var(--amber-glow);
+  }
+  .ach-badge.locked { opacity: 0.5; }
+  .ach-badge.locked .ach-icon { filter: grayscale(1); }
+  .ach-icon { font-size: 26px; }
+  .ach-info { display: flex; flex-direction: column; gap: 2px; }
+  .ach-name { font-family: var(--font-display); font-size: 13.5px; color: var(--text); }
+  .ach-badge.unlocked .ach-name { color: var(--amber); }
+  .ach-desc { font-size: 10px; color: var(--text-dim); }
+  .ach-req { font-size: 9px; color: var(--text-dim); font-style: italic; border-top: 1px dashed rgba(255,255,255,0.05); margin-top: 4px; padding-top: 2px; }
+
+  /* Footer actions styling */
+  .footer-actions { display: flex; justify-content: center; margin-top: 15px; }
+  .ghost-btn {
+    background: transparent; border: 1px solid var(--line); color: var(--text-dim);
+    font-family: var(--font-mono); font-size: 11px; padding: 8px 18px; border-radius: 4px; cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .ghost-btn:hover { border-color: var(--red); color: var(--red); box-shadow: 0 0 8px var(--red-glow); }
+
+  /* ================= QUIZ VIEW ================= */
+  .quiz-hud {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; gap: 10px; flex-wrap: wrap;
+  }
+  .hud-chip {
+    border: 1px solid var(--line); border-radius: 4px; padding: 6px 14px; font-size: 12.5px;
+    color: var(--text-dim); background: var(--bg-panel); display: flex; align-items: center; gap: 6px;
+    backdrop-filter: blur(12px);
+  }
+  .hud-chip b { color: var(--text); }
+  .hud-chip.timer { border-color: var(--line); display: flex; align-items: center; gap: 8px; }
+  .hud-chip.timer b { color: var(--amber); font-variant-numeric: tabular-nums; }
+  .hud-chip.streak b { color: var(--green); }
+
+  /* Circular Countdown Timer SVG */
+  .timer-svg { width: 18px; height: 18px; transform: rotate(-90deg); }
+  .timer-bg { fill: none; stroke: rgba(255, 255, 255, 0.05); stroke-width: 4; }
+  .timer-fill { fill: none; stroke: var(--green); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 100, 100; transition: stroke-dasharray 1s linear, stroke 0.3s ease; }
+
+  .progress-track { display: flex; gap: 5px; margin-bottom: 24px; }
+  .progress-seg { flex: 1; height: 6px; border-radius: 3px; background: #050b09; border: 1px solid var(--line); overflow: hidden; position: relative; }
+  .progress-seg.correct { background: var(--green); border-color: var(--green); box-shadow: 0 0 5px var(--green-glow); }
+  .progress-seg.wrong { background: var(--red); border-color: var(--red); box-shadow: 0 0 5px var(--red-glow); }
+  .progress-seg.current { background: var(--bg-raised); border-color: var(--amber); box-shadow: 0 0 8px rgba(255, 180, 84, 0.4); animation: pulseBorder 1.5s infinite alternate; }
+
+  .q-card {
+    background: var(--bg-panel); border: 1px solid var(--line); border-radius: 8px;
+    padding: 28px; margin-bottom: 20px; backdrop-filter: blur(12px); position: relative;
+  }
+  .q-card::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--line);
+  }
+  .q-eyebrow { font-family: var(--font-display); font-size: 12px; color: var(--green); letter-spacing: 1px; margin-bottom: 12px; text-transform: uppercase; }
+  .q-text { font-size: 18px; line-height: 1.6; color: var(--text); font-family: var(--font-display); margin-bottom: 26px; }
+
+  .opt-list { display: flex; flex-direction: column; gap: 12px; }
+  .opt {
+    display: flex; align-items: center; gap: 14px;
+    border: 1px solid var(--line); border-radius: 6px; padding: 14px 18px;
+    cursor: pointer; background: var(--bg-raised); transition: all 0.15s cubic-bezier(0.165, 0.84, 0.44, 1);
+    font-size: 15px; color: var(--text); position: relative; overflow: hidden;
+  }
+  .opt:hover:not(.locked) {
+    border-color: var(--green); background: rgba(62, 242, 168, 0.05);
+    box-shadow: 0 0 10px rgba(62, 242, 168, 0.05);
+  }
+  .opt .k {
+    width: 24px; height: 24px; border: 1px solid var(--line); border-radius: 4px;
+    display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--text-dim);
+    flex-shrink: 0; font-family: var(--font-mono); transition: all 0.15s ease;
+  }
+  .opt.selected { border-color: var(--green); background: rgba(62, 242, 168, 0.08); }
+  .opt.selected .k { border-color: var(--green); color: var(--green); box-shadow: 0 0 5px var(--green-glow); }
+  .opt.correct { border-color: var(--green); background: rgba(62, 242, 168, 0.16); animation: flashCorrect 0.4s ease; }
+  .opt.correct .k { background: var(--green); color: var(--text-dark); border-color: var(--green); box-shadow: 0 0 5px var(--green-glow); }
+  .opt.wrong { border-color: var(--red); background: rgba(255, 90, 110, 0.12); animation: shakeWrong 0.4s ease-in-out; }
+  .opt.wrong .k { background: var(--red); color: var(--text); border-color: var(--red); box-shadow: 0 0 5px var(--red-glow); }
+  .opt.locked { cursor:default; }
+  .opt.dim { opacity: 0.4; }
+
+  /* Interactive Diagnostics Feedback Block */
+  .feedback-line {
+    margin-top: 20px; font-size: 13.5px; border-radius: 6px;
+    border: 1px solid var(--line); background: var(--bg-raised); overflow: hidden; display: none;
+    animation: slideDownFade 0.3s ease-out;
+  }
+  .feedback-line.show { display: block; }
+  .feedback-line.ok { border-color: var(--green); box-shadow: 0 0 15px var(--green-glow); }
+  .feedback-line.no { border-color: var(--red); box-shadow: 0 0 15px var(--red-glow); }
+  
+  .feedback-status {
+    padding: 12px 16px; font-weight: bold; font-family: var(--font-display); font-size: 14px;
+    letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--line);
+  }
+  .feedback-status.success { background: rgba(62, 242, 168, 0.08); color: var(--green); }
+  .feedback-status.error { background: rgba(255, 90, 110, 0.08); color: var(--red); }
+  .feedback-correct-answer { padding: 12px 16px; font-size: 13px; color: var(--text-dim); }
+  .feedback-correct-answer b { color: var(--green); }
+  
+  .feedback-diag { padding: 16px; border-top: 1px dashed var(--line); }
+  .diag-title { font-family: var(--font-display); font-size: 11px; color: var(--text-dim); margin-bottom: 10px; letter-spacing: 1px; }
+  .diag-item { margin-bottom: 8px; font-size: 12.5px; }
+  .diag-item b { color: var(--text-dim); font-weight: normal; }
+  .diff-tag { font-size: 9.5px; padding: 1px 6px; border-radius: 3px; font-weight: bold; text-transform: uppercase; border: 1px solid; }
+  .diff-tag.easy { color: var(--green); border-color: var(--green-dim); }
+  .diff-tag.medium { color: var(--amber); border-color: #8c642e; }
+  .diff-tag.hard { color: var(--red); border-color: var(--red-glow); }
+  
+  .diag-explanation { margin-top: 12px; line-height: 1.5; color: var(--text); border-left: 2px solid var(--green); padding-left: 10px; }
+  .diag-tip { margin-top: 10px; font-size: 12px; color: var(--amber); display: flex; gap: 4px; }
+
+  .quiz-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
+  .primary-btn {
+    background: var(--green); color: var(--text-dark); border: none; border-radius: 4px;
+    font-family: var(--font-display); font-weight: bold; font-size: 14px; padding: 12px 24px;
+    cursor: pointer; letter-spacing: 0.5px; transition: all 0.2s ease;
+    box-shadow: 0 0 10px var(--green-glow); display: flex; align-items: center; gap: 8px;
+  }
+  .primary-btn:disabled { background: #091310; color: var(--text-dim); cursor: not-allowed; border: 1px solid var(--line); box-shadow: none; }
+  .primary-btn:not(:disabled):hover { filter: brightness(1.1); box-shadow: 0 0 15px var(--green); transform: translateY(-1px); }
+  
+  .quit-btn {
+    background: transparent; border: none; color: var(--text-dim); font-family: var(--font-mono);
+    font-size: 12px; cursor: pointer; text-decoration: underline; text-underline-offset: 4px; transition: color 0.2s ease;
+  }
+  .quit-btn:hover { color: var(--red); }
+
+  /* ================= RESULTS VIEW ================= */
+  .result-hero {
+    text-align: center; padding: 40px 24px; background: var(--bg-panel);
+    border: 1px solid var(--line); border-radius: 8px; margin-bottom: 24px;
+    backdrop-filter: blur(12px); position: relative; overflow: hidden;
+  }
+  .result-hero::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--green);
+  }
+  .result-badge { font-size: 52px; margin-bottom: 12px; animation: floatIcon 2.5s infinite ease-in-out; }
+  .result-title { font-family: var(--font-display); font-size: 26px; color: var(--green); margin-bottom: 6px; letter-spacing: 0.5px; text-shadow: 0 0 10px var(--green-glow); }
+  .result-sub { color: var(--text-dim); font-size: 13.5px; margin-bottom: 26px; }
+  
+  .result-score-gauge {
+    display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 140px; height: 140px; border-radius: 50%; border: 4px solid var(--line);
+    margin-bottom: 24px; position: relative; box-shadow: 0 0 20px var(--line-glow);
+    background: rgba(3, 7, 6, 0.6);
+  }
+  .result-score-gauge.perfect { border-color: var(--green); box-shadow: 0 0 20px var(--green-glow); }
+  .result-score { font-size: 42px; font-family: var(--font-display); font-weight: bold; color: var(--text); line-height: 1; }
+  .result-score span { font-size: 16px; color: var(--text-dim); font-weight: normal; margin-left: 2px; }
+  .result-grade { font-size: 9px; color: var(--green); font-family: var(--font-mono); letter-spacing: 1px; font-weight: bold; text-transform: uppercase; margin-top: 6px; border: 1px solid var(--green); padding: 2px 6px; border-radius: 3px; }
+
+  .result-stats { display: flex; justify-content: center; gap: 20px; margin-top: 24px; flex-wrap: wrap; }
+  .rstat {
+    text-align: center; background: var(--bg-raised); border: 1px solid var(--line);
+    border-radius: 6px; padding: 12px 20px; min-width: 110px; flex: 1;
+  }
+  .rstat .rv { font-size: 22px; font-weight: bold; font-family: var(--font-display); }
+  .rstat .rl { font-size: 10px; color: var(--text-dim); letter-spacing: 0.5px; text-transform: uppercase; margin-top: 4px; }
+  .rstat.acc .rv { color: var(--green); text-shadow: 0 0 5px var(--green-glow); }
+  .rstat.miss .rv { color: var(--red); text-shadow: 0 0 5px var(--red-glow); }
+  .rstat.best .rv { color: var(--amber); text-shadow: 0 0 5px var(--amber-glow); }
+  .rstat.xp-gained .rv { color: var(--green); text-shadow: 0 0 5px var(--green-glow); }
+
+  /* Review Section Headers */
+  .review-tabs {
+    display: flex; gap: 10px; margin-bottom: 16px; border-bottom: 1px solid var(--line); padding-bottom: 8px;
+  }
+  .review-tab-btn {
+    background: transparent; border: none; color: var(--text-dim); font-family: var(--font-display);
+    font-size: 13px; cursor: pointer; padding: 6px 12px; transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+  }
+  .review-tab-btn:hover { color: var(--text); }
+  .review-tab-btn.active { color: var(--green); border-bottom-color: var(--green); text-shadow: 0 0 5px var(--green-glow); }
+
+  .review-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+  .review-item {
+    background: var(--bg-panel); border: 1px solid var(--line); border-left-width: 4px;
+    border-radius: 6px; padding: 16px; font-size: 13.5px; backdrop-filter: blur(12px);
+    transition: all 0.2s ease;
+  }
+  .review-item:hover { border-color: var(--line-glow); }
+  .review-item.correct { border-left-color: var(--green); }
+  .review-item.wrong { border-left-color: var(--red); }
+  
+  .review-q-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+  .review-q { color: var(--text); font-family: var(--font-display); font-size: 15px; font-weight: normal; }
+  .review-diff { flex-shrink: 0; }
+  
+  .review-answers { display: flex; flex-direction: column; gap: 4px; font-size: 12.5px; color: var(--text-dim); }
+  .review-answers span b { font-weight: bold; }
+  .review-answers .user-ans.wrong-ans { color: var(--red); text-decoration: line-through; }
+  .review-answers .user-ans.right-ans { color: var(--green); }
+  .review-answers .correct-ans { color: var(--green); }
+  
+  .review-explanation-box {
+    margin-top: 12px; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 10px; font-size: 12.5px;
+  }
+  .review-explanation-box p { margin: 4px 0; line-height: 1.5; color: var(--text-dim); }
+  .review-explanation-box p b { color: var(--text); }
+  
+  .result-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+  .secondary-btn {
+    background: transparent; border: 1px solid var(--line); color: var(--text);
+    font-family: var(--font-display); font-size: 14px; padding: 12px 24px; border-radius: 4px; cursor: pointer;
+    transition: all 0.2s ease; letter-spacing: 0.5px;
+  }
+  .secondary-btn:hover { border-color: var(--green-dim); color: var(--green); box-shadow: 0 0 10px var(--green-glow); }
+
+  .hidden { display: none !important; }
+
+  /* Custom overlays */
+  .rank-promotion-overlay {
+    position: fixed; inset: 0; background: rgba(3, 7, 6, 0.95); display: flex;
+    align-items: center; justify-content: center; z-index: 1100; animation: fadeIn 0.3s ease forwards;
+  }
+  .rank-promo-card {
+    background: var(--bg-raised); border: 2px solid var(--green); box-shadow: 0 0 30px var(--green-glow);
+    border-radius: 12px; padding: 40px; text-align: center; max-width: 440px; width: 90%;
+    animation: scaleUpGlitch 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+  .glitch-title { font-family: var(--font-display); font-size: 26px; color: var(--green); text-shadow: 0 0 10px var(--green); margin-bottom: 20px; font-weight: bold; }
+  .rank-badge-large { font-size: 72px; margin-bottom: 15px; animation: floatIcon 2s ease-in-out infinite; }
+  .rank-name-large { font-family: var(--font-display); font-size: 24px; color: var(--green); margin-bottom: 10px; }
+  .rank-desc-large { font-size: 13px; color: var(--text-dim); margin-bottom: 30px; line-height: 1.5; }
+
+  .terminal-load-overlay { position: fixed; inset: 0; background: #030706; z-index: 1200; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .terminal-load-box { width: 100%; max-width: 600px; background: #050b0a; border: 1px solid var(--line); box-shadow: 0 0 20px var(--line-glow); padding: 24px; border-radius: 6px; font-family: var(--font-mono); font-size: 13.5px; color: var(--text); min-height: 200px; }
+  .term-prompt { color: var(--green); }
+  .term-log { margin-top: 15px; }
+  .term-log-line { margin-bottom: 6px; color: var(--text-dim); }
+  .term-log-line:last-child { color: var(--green); text-shadow: 0 0 5px var(--green); font-weight: bold; }
+
+  .achievement-toast {
+    position: fixed; top: 20px; right: -320px; width: 300px; background: var(--bg-raised);
+    border: 1px solid var(--amber); box-shadow: 0 0 15px var(--amber-glow); border-radius: 6px;
+    padding: 12px 16px; display: flex; align-items: center; gap: 14px; z-index: 2000;
+    transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  .achievement-toast.show { right: 20px; }
+  .toast-icon { font-size: 32px; }
+  .toast-title { font-size: 10px; color: var(--amber); letter-spacing: 1px; font-weight: bold; }
+  .toast-name { font-family: var(--font-display); font-size: 14px; color: var(--text); font-weight: bold; margin-top: 2px; }
+
+  /* Keyboard hints styling */
+  .key-hint {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--line); border-radius: 3px;
+    padding: 2px 6px; font-size: 10px; font-family: var(--font-mono); color: var(--text-dim); margin-left: 6px;
+  }
+
+  /* Animations */
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 0.8; box-shadow: 0 0 10px var(--green-glow); }
+    50% { opacity: 1; box-shadow: 0 0 15px var(--green), 0 0 25px var(--green-glow); }
+  }
+  @keyframes pulseBorder {
+    0% { border-color: var(--line); }
+    100% { border-color: var(--amber); }
+  }
+  @keyframes floatIcon {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @keyframes flashCorrect {
+    0%, 100% { border-color: var(--green); }
+    50% { border-color: #fff; background: rgba(62, 242, 168, 0.3); }
+  }
+  @keyframes shakeWrong {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-4px); }
+    40%, 80% { transform: translateX(4px); }
+  }
+  @keyframes slideDownFade {
+    0% { transform: translateY(-10px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes scaleUpGlitch {
+    0% { transform: scale(0.85); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  /* Floating XP gain popup */
+  .floating-xp-gain {
+    position: fixed; z-index: 3000; pointer-events: none;
+    font-family: var(--font-display); font-size: 16px; font-weight: bold;
+    color: var(--green); text-shadow: 0 0 10px var(--green);
+    animation: floatUpXp 0.9s ease-out forwards;
+    transform: translateX(-50%);
+  }
+  @keyframes floatUpXp {
+    0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-60px); }
+  }
+
+  /* Audio toggle button text update */
+  .audio-toggle.active::after { content: ''; }
+
+  @media (max-width: 520px) {
+    .q-text { font-size: 16px; }
+    .result-score { font-size: 34px; }
+    .result-score-gauge { width: 120px; height: 120px; }
+    .topbar { flex-direction: column; align-items: flex-start; }
+    .topbar-actions { width: 100%; justify-content: space-between; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <div class="dot"></div>
+      <div>
+        <div class="brand-text"><b>CDTechs</b> // ethical_hacking_quiz</div>
+        <div class="brand-sub">1052235213 · Diploma Computer Engineering</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <div class="path" id="pathCrumb">~/dashboard</div>
+      <button class="audio-toggle" id="audioToggle">
+        🔊 AUDIO: OFF
+      </button>
+    </div>
+  </div>
+
+  <!-- ============ DASHBOARD ============ -->
+  <div id="view-dashboard">
+    <h1><span class="prompt">$</span> select_unit --list</h1>
+    <p class="subhead">5 units · 151 questions total. Clear each unit to build your streak and earn XP.</p>
+
+    <!-- Agent Profile & Diagnostics Hero -->
+    <div class="hero-panel">
+      <div class="agent-profile">
+        <div class="agent-header">
+          <div class="agent-rank-badge" id="rankIcon">🐣</div>
+          <div>
+            <div class="agent-title" id="rankName">Script Kiddie</div>
+            <div class="agent-subtitle" id="rankDesc">Just booted up Kali for the first time.</div>
+          </div>
+        </div>
+        <div class="xp-progress-box">
+          <div class="xp-bar-labels">
+            <span>XP PROGRESS</span>
+            <span id="rankXpText">0 / 150 XP (Next Rank: SOC Intern)</span>
+          </div>
+          <div class="xp-bar-outer">
+            <div class="xp-bar-inner" id="rankXpBar"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="diagnostics-console">
+        <div class="console-title">// ACTIVE DIAGNOSTICS & GOAL TRACKER</div>
+        <div class="stats-subgrid">
+          <div class="stat-card">
+            <div class="label">Accuracy</div>
+            <div class="val" id="statsAccuracy">0%</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Solved</div>
+            <div class="val"><span id="statsSolved">0</span><b style="font-size: 11px; font-weight: normal; color: var(--text-dim);"> / <span id="totalMax">151</span></b></div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Best Streak</div>
+            <div class="val" id="statsStreak">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">Completed Units</div>
+            <div class="val" id="statsCompletedUnits">0</div>
+          </div>
+          <div class="stat-card goal-card" id="dailyGoalCard">
+            <div class="label">Daily Goal (Complete 1 Unit)</div>
+            <div class="val" style="font-size: 13px;" id="statsDailyGoal">0 / 1 INCOMPLETE</div>
+          </div>
+          <div class="stat-card goal-card" id="weeklyGoalCard">
+            <div class="label">Weekly Goal (500 XP)</div>
+            <div class="val" style="font-size: 13px;" id="statsWeeklyGoal">0 / 500 XP</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Dashboard Split Grid -->
+    <div class="dash-split">
+      <div>
+        <h2 style="font-family: var(--font-display); font-size: 14px; color: var(--text-dim); margin-bottom: 12px; letter-spacing: 0.5px;">// AVAILABLE TARGET UNITS</h2>
+        <div class="dash-grid" id="dashGrid"></div>
+      </div>
+      <div>
+        <h2 style="font-family: var(--font-display); font-size: 14px; color: var(--text-dim); margin-bottom: 12px; letter-spacing: 0.5px;">// ACHIEVEMENTS DATABASE</h2>
+        <div class="achievements-panel">
+          <div class="achievements-list" id="achievementsGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden Overall Tracker elements (strictly preserved for existing selectors compatibility) -->
+    <div class="hidden">
+      <span id="totalScore">0</span>
+      <div id="trackerBar"></div>
+      <div id="miniUnits"></div>
+    </div>
+
+    <div class="footer-actions">
+      <button class="ghost-btn" id="welcomeAgentName">Agent: root@cdtechs</button>
+      <button class="ghost-btn" id="resetAllBtn" style="margin-left: 10px;">rm -rf progress/ &nbsp;(wipe profile)</button>
+    </div>
+  </div>
+
+  <!-- ============ QUIZ ============ -->
+  <div id="view-quiz" class="hidden">
+    <div class="quiz-hud">
+      <div class="hud-chip">UNIT <b id="qUnitId">1</b> · <span id="qUnitTitle">—</span></div>
+      <div class="hud-chip">QUESTION <b id="qIndex">1</b>/<span id="qTotal">0</span></div>
+      <div class="hud-chip streak">STREAK <b id="qStreak">0</b>🔥</div>
+      <div class="hud-chip timer">
+        <svg class="timer-svg" viewBox="0 0 36 36">
+          <path class="timer-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+          <path class="timer-fill" id="timerFill" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+        </svg>
+        <span id="timerText">30s</span>
+      </div>
+      <div class="hud-chip">SESSION: <span id="elapsedText" style="color: var(--text); font-variant-numeric: tabular-nums;">00:00</span></div>
+    </div>
+    <div class="progress-track" id="progressTrack"></div>
+
+    <div class="q-card">
+      <div class="q-eyebrow" id="qEyebrow">// PART A — QUESTION DIAGNOSTICS</div>
+      <div class="q-text" id="qText">Loading question...</div>
+      <div class="opt-list" id="optList"></div>
+      <div class="feedback-line" id="feedback"></div>
+    </div>
+
+    <div class="quiz-actions">
+      <button class="quit-btn" id="quitBtn">✕ abort session</button>
+      <button class="primary-btn" id="nextBtn" disabled>submit_answer()</button>
+    </div>
+  </div>
+
+  <!-- ============ RESULTS ============ -->
+  <div id="view-results" class="hidden">
+    <div class="result-hero">
+      <div class="result-badge" id="resBadge">🏆</div>
+      <div class="result-title" id="resTitle">UNIT CLEARED</div>
+      <div class="result-sub" id="resSub">Unit 1 · Foundations & Legal Framework</div>
+      
+      <div class="result-score-gauge">
+        <div class="result-score" id="resScore">0<span>/38</span></div>
+      </div>
+      
+      <div class="result-stats">
+        <div class="rstat acc"><div class="rv" id="resAcc">0%</div><div class="rl">ACCURACY</div></div>
+        <div class="rstat best"><div class="rv" id="resStreak">0</div><div class="rl">BEST STREAK</div></div>
+        <div class="rstat miss"><div class="rv" id="resMiss">0</div><div class="rl">MISSED</div></div>
+        <div class="rstat xp-gained"><div class="rv" id="resXpGained">+0 XP</div><div class="rl">XP EARNED</div></div>
+      </div>
+    </div>
+
+    <div id="reviewWrap">
+      <div class="review-tabs">
+        <button class="review-tab-btn active" id="missedReviewTab">// 01 // MISSED QUESTIONS</button>
+        <button class="review-tab-btn" id="allReviewTab">// 02 // ALL QUESTIONS</button>
+      </div>
+      <div class="review-list" id="reviewList"></div>
+    </div>
+
+    <div class="result-actions">
+      <button class="secondary-btn" id="retryBtn">↻ retry unit</button>
+      <button class="primary-btn" id="dashBtn">back_to_dashboard →</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Ethical Hacking — Quiz Question Bank
+// Extracted from Model Question Paper (1052235213), Part A (MCQs), grouped by Unit.
+
+const QUIZ_DATA = {
+  meta: {
+    subject: "Ethical Hacking",
+    code: "1052235213",
+    branch: "Computer Engineering (Full Time)",
+  },
+  units: [
+    {
+      id: 1,
+      title: "Foundations & Legal Framework",
+      tagline: "CIA Triad, hacker types, IT Act",
+      questions: [
+        { q: "Which amendment to the Indian IT Act introduced stricter penalties for cybercrimes?", options: ["IT Act, 2010", "IT Act, 2008", "IT Act, 2004", "IT Act, 2012"], answer: 1 },
+        { q: "What is the main difference between ethical and non-ethical hacking?", options: ["Ethical hacking requires permission", "Ethical hacking is illegal", "Ethical hacking uses no tools", "Non-ethical hacking improves security"], answer: 0 },
+        { q: "Which term refers to a weakness in a system that can be exploited?", options: ["Backdoor", "Payload", "Vulnerability", "Exploit"], answer: 2 },
+        { q: "Footprinting is a part of which phase of hacking?", options: ["Gaining Access", "Scanning", "Reconnaissance", "Clearing Tracks"], answer: 2 },
+        { q: "What does the Confidentiality principle in the CIA triad ensure?", options: ["Data accuracy", "Data availability", "Data modification", "Data protection from unauthorized access"], answer: 3 },
+        { q: "Which type of hacker operates without permission but without malicious intent?", options: ["White-Hat Hacker", "Black-Hat Hacker", "Gray-Hat Hacker", "Hacktivist"], answer: 2 },
+        { q: "Which tool is commonly used in ethical hacking?", options: ["Microsoft Word", "Adobe Photoshop", "Notepad", "Nmap"], answer: 3 },
+        { q: "What is a disadvantage of ethical hacking?", options: ["Can be costly and time-consuming", "Improves system security", "Enhances customer trust", "Ensures compliance with laws"], answer: 0 },
+        { q: "Which component of the CIA triad ensures data is not altered unauthorizedly?", options: ["Integrity", "Confidentiality", "Authenticity", "Availability"], answer: 0 },
+        { q: "Which section of the Indian IT Act, 2000 deals with unauthorized access to computer systems?", options: ["Section 66", "Section 72", "Section 43", "Section 80"], answer: 2 },
+        { q: "Which type of hacking involves authorized testing to improve security?", options: ["Black-Hat Hacking", "Gray-Hat Hacking", "Script Kiddie Hacking", "White-Hat Hacking"], answer: 3 },
+        { q: "Which of these is not an ethical hacking tool?", options: ["Nmap", "WannaCry", "Metasploit", "Wireshark"], answer: 1 },
+        { q: "What is 'penetration testing'?", options: ["Sending spam", "Testing systems for vulnerabilities", "Crashing systems", "Monitoring networks"], answer: 1 },
+        { q: "Which phase of hacking involves exploiting vulnerabilities?", options: ["Exploitation", "Reconnaissance", "Scanning", "Footprinting"], answer: 0 },
+        { q: "Which type of hacker uses skills for malicious purposes?", options: ["White Hat", "Grey Hat", "Black Hat", "Green Hat"], answer: 2 },
+        { q: "Which tool is best used for password cracking?", options: ["Burp Suite", "John the Ripper", "Nikto", "Nmap"], answer: 1 },
+        { q: "Which law governs cyber activities in India?", options: ["Copyright Act", "Patent Act", "Indian IT Act 2000", "Indian Penal Code"], answer: 2 },
+        { q: "Which Indian law governs cybercrime and electronic commerce?", options: ["Indian Penal Code", "Indian IT Act 2000", "Digital Privacy Act", "Cybersecurity Act"], answer: 1 },
+        { q: "Which tool is used for port scanning?", options: ["Wireshark", "Nmap", "Nikto", "John the Ripper"], answer: 1 },
+        { q: "What does the Indian IT Act, 2000 primarily address?", options: ["Intellectual property", "Taxation laws", "Physical security", "Cybercrimes and electronic commerce"], answer: 3 },
+        { q: "What does the 'C' in the CIA triad stand for?", options: ["Code", "Confidentiality", "Connection", "Cybersecurity"], answer: 1 },
+        { q: "Which of these is not a phase in hacking?", options: ["Reconnaissance", "Data Encryption", "Scanning", "Gaining Access"], answer: 1 },
+        { q: "What is the purpose of a 'backdoor' in hacking?", options: ["To encrypt data", "To analyze packets", "To maintain unauthorized access", "To scan networks"], answer: 2 },
+        { q: "Integrity in the CIA triad means:", options: ["Data is kept secret", "Data remains unaltered", "Data is accessible", "Data is encrypted"], answer: 1 },
+        { q: "Which principle ensures systems are available when needed?", options: ["Confidentiality", "Integrity", "Availability", "Authenticity"], answer: 2 },
+        { q: "Which type of hacker works for organizations to find security flaws?", options: ["Black Hat", "White Hat", "Grey Hat", "Red Hat"], answer: 1 },
+        { q: "Which of the following best defines ethical hacking?", options: ["Hacking with criminal intent", "Gaining unauthorized access to systems", "Hacking performed with permission to improve security", "Installing viruses for testing"], answer: 2 },
+        { q: "What is a key skill required for ethical hacking?", options: ["Graphic design", "Network security knowledge", "Web development", "Database management"], answer: 1 },
+        { q: "What is the Availability principle in the CIA triad?", options: ["Ensuring data is modified", "Ensuring data is deleted", "Ensuring data is encrypted", "Ensuring data is accessible to authorized users"], answer: 3 },
+        { q: "Which term refers to a hacker with limited technical skills?", options: ["Grey Hat", "Script Kiddie", "White Hat", "Elite Hacker"], answer: 1 },
+        { q: "The Indian IT Act was amended in:", options: ["2005", "2008", "2006", "2010"], answer: 1 },
+        { q: "The final step in hacking is:", options: ["Gaining access", "Covering tracks", "Footprinting", "Scanning"], answer: 1 },
+        { q: "Which tool is used for password cracking in ethical hacking?", options: ["Wireshark", "Hydra", "Nmap", "Burp Suite"], answer: 1 },
+        { q: "A script kiddie is:", options: ["Highly skilled", "Uses automated tools with little understanding", "Government hacker", "Ethical hacker"], answer: 1 },
+        { q: "The purpose of ethical hacking is to:", options: ["Create viruses", "Identify vulnerabilities", "Damage networks", "Access data illegally"], answer: 1 },
+        { q: "A hacker who tests a system without malicious intent but without permission is:", options: ["Blue Hat", "Grey Hat", "Black Hat", "White Hat"], answer: 1 },
+        { q: "Which phase of hacking involves gathering information about the target?", options: ["Reconnaissance", "Maintaining Access", "Exploitation", "Covering Tracks"], answer: 0 },
+        { q: "Which of the following is NOT a skill of an ethical hacker?", options: ["Programming", "Money laundering", "Networking", "Social engineering"], answer: 1 }
+      ]
+    },
+    {
+      id: 2,
+      title: "Reconnaissance & Footprinting",
+      tagline: "WHOIS, DNS, fingerprinting, OSINT",
+      questions: [
+        { q: "Which protocol is often targeted during DNS fingerprinting?", options: ["HTTP", "DNS", "SMTP", "FTP"], answer: 1 },
+        { q: "What tool might be used to perform web application scanning?", options: ["WinRAR", "Burp Suite", "MS Word", "Adobe Reader"], answer: 1 },
+        { q: "What does a WHOIS lookup provide?", options: ["Domain ownership and registrar information", "The target's IP address range", "The target's operating system details", "The target's open ports"], answer: 0 },
+        { q: "What is footprinting in the context of reconnaissance?", options: ["Encrypting sensitive data", "Exploiting a system's vulnerabilities", "Installing a firewall", "Collecting detailed information about a target system or network"], answer: 3 },
+        { q: "What is a common source for passive reconnaissance?", options: ["Port scanning", "Packet injection", "Vulnerability scanning", "Social media platforms"], answer: 3 },
+        { q: "What is the purpose of identifying IP address ranges during footprinting?", options: ["To encrypt network traffic", "To determine the physical location of the server", "To block specific IP addresses", "To identify all hosts within a network"], answer: 3 },
+        { q: "How would you identify a web application's underlying technology?", options: ["SQL Injection", "Application fingerprinting", "DNS Enumeration", "DoS Attack"], answer: 1 },
+        { q: "Which tool is commonly used for banner grabbing?", options: ["Nmap", "Excel", "Paint", "WordPad"], answer: 0 },
+        { q: "What does DNS fingerprinting involve?", options: ["Identifying the DNS server software and version", "Encrypting DNS queries", "Blocking DNS traffic", "Modifying DNS records"], answer: 0 },
+        { q: "What is the primary goal of reconnaissance in cybersecurity?", options: ["To exploit vulnerabilities", "To gather information about a target", "To install malware", "To encrypt data"], answer: 1 },
+        { q: "What is the main purpose of passive reconnaissance?", options: ["Modify target's server", "Collect information without interacting directly", "Launch a DoS attack", "Infect with malware"], answer: 1 },
+        { q: "What is fingerprinting in cybersecurity?", options: ["Encrypting sensitive data", "Identifying the physical location of a server", "Determining specific characteristics of a system or application", "Blocking unauthorized access"], answer: 2 },
+        { q: "Which vulnerability would be most dangerous on a public-facing login form?", options: ["Broken image", "SQL Injection", "Missing favicon", "Misaligned CSS"], answer: 1 },
+        { q: "Which tool is commonly used to retrieve domain name information?", options: ["Wireshark", "Nmap", "WHOIS", "Metasploit"], answer: 2 },
+        { q: "Which step would be part of active reconnaissance?", options: ["Google search", "Port scanning", "Social media scan", "Checking website cache"], answer: 1 },
+        { q: "What is the purpose of application fingerprinting?", options: ["To encrypt application data", "To block application access", "To modify application code", "To identify the version and type of software running on a system"], answer: 3 },
+        { q: "Which command can be used to find the IP address of a domain?", options: ["nslookup", "ifconfig", "netstat", "arp"], answer: 0 },
+        { q: "How does SQL Injection work?", options: ["By replacing SQL with NoSQL", "By inserting malicious SQL code into a query", "By injecting malicious scripts into HTML", "By encrypting the SQL database"], answer: 1 },
+        { q: "What is the purpose of DNS enumeration?", options: ["Block IP addresses", "Gather domain-related information", "Delete all domain records", "Encrypt DNS data"], answer: 1 },
+        { q: "Which tool can be used to gather the history of a website?", options: ["Wayback Machine", "Burp Suite", "Nmap", "Nessus"], answer: 0 },
+        { q: "If a website is vulnerable to SQL injection, what could an attacker do?", options: ["Upgrade the database", "Retrieve or manipulate database information", "Change the font of the website", "Encrypt the entire server"], answer: 1 },
+        { q: "Which tool is commonly used for web application scanning?", options: ["Wireshark", "John the Ripper", "Nikto", "Nmap"], answer: 2 },
+        { q: "What type of attack attempts to make a machine or network resource unavailable?", options: ["Malware", "DoS", "XSS", "SQL Injection"], answer: 1 },
+        { q: "Which of the following is a characteristic of active reconnaissance?", options: ["It uses publicly available information", "It involves no direct interaction with the target system", "It involves direct interaction with the target system", "It relies solely on social engineering"], answer: 2 },
+        { q: "How can you identify the hosting company of a website?", options: ["By scanning open ports", "By performing a WHOIS lookup", "By running a brute-force attack", "By analyzing the website's source code"], answer: 1 },
+        { q: "Which information is NOT typically obtained through footprinting?", options: ["IP address range", "Internal password policy", "Hosting company", "Domain name"], answer: 1 },
+        { q: "Why is passive reconnaissance preferred in early stages of penetration testing?", options: ["It costs more", "It avoids detection", "It alerts the target", "It destroys logs"], answer: 1 },
+        { q: "Which of the following is a passive reconnaissance technique?", options: ["Port Scanning", "Whois Lookup", "Banner Grabbing", "Social Engineering"], answer: 1 },
+        { q: "Which of the following is an information gathering technique?", options: ["SQL Injection", "Banner Grabbing", "Exploitation", "DoS"], answer: 1 },
+        { q: "Which tool is commonly used for DNS enumeration?", options: ["Nmap", "Metasploit", "Burp Suite", "Dig"], answer: 3 },
+        { q: "Passive reconnaissance primarily relies on:", options: ["Collecting information from public sources", "Scanning the target's network", "Sending packets to the target system", "Modifying the target's database"], answer: 0 },
+        { q: "What is a potential risk of active reconnaissance?", options: ["It is undetectable by the target", "It does not provide useful information", "It may alert the target's security systems", "It relies only on public data"], answer: 2 },
+        { q: "Which command-line tool can be used to find domain name information?", options: ["netstat", "whois", "mkdir", "ipconfig"], answer: 1 },
+        { q: "What does fingerprinting help an attacker identify?", options: ["User passwords", "System information and versions", "Mobile devices", "Firewalls"], answer: 1 }
+      ]
+    },
+    {
+      id: 3,
+      title: "Scanning, Sniffing & MITM",
+      tagline: "Port scans, ARP/DNS spoofing, sniffing",
+      questions: [
+        { q: "Which tool is commonly used for port scanning?", options: ["Wireshark", "Metasploit", "Nessus", "Nmap"], answer: 3 },
+        { q: "Which protocol is commonly used during a ping sweep?", options: ["UDP", "ICMP", "ARP", "TCP"], answer: 1 },
+        { q: "Which technique can detect sniffers on a network?", options: ["Using antivirus software", "Sending ICMP echo requests", "Sending ARP requests and analyzing responses", "Formatting hard drive"], answer: 2 },
+        { q: "What type of attack involves intercepting communication between two parties?", options: ["SQL Injection", "Man-In-The-Middle Attack", "Buffer Overflow", "Brute Force Attack"], answer: 1 },
+        { q: "What can session hijacking compromise?", options: ["Network bandwidth", "Firewall rules", "DNS server settings", "User authentication credentials"], answer: 3 },
+        { q: "Which of the following tools can be used for packet sniffing?", options: ["Nmap", "Wireshark", "Nessus", "John the Ripper"], answer: 1 },
+        { q: "Which scanning technique avoids full TCP handshakes to stay undetected?", options: ["Full connect scan", "SYN scan", "UDP scan", "Null scan"], answer: 1 },
+        { q: "What does network discovery aim to identify?", options: ["Devices and their configurations on a network", "Packet contents in transit", "Open ports on a single device", "Malware on a system"], answer: 0 },
+        { q: "Which of the following is a popular vulnerability scanning tool?", options: ["Wireshark", "Cain & Abel", "OpenVAS", "Aircrack-ng"], answer: 2 },
+        { q: "Which network device can make sniffing more difficult in a switched network?", options: ["Router", "Firewall", "Hub", "Switch"], answer: 3 },
+        { q: "What is ARP spoofing?", options: ["Faking IP packets", "Sending fake ARP messages to a LAN", "Changing DNS records", "Encrypting ARP responses"], answer: 1 },
+        { q: "Which technique is often used to facilitate an MITM attack?", options: ["ARP spoofing", "Vulnerability scanning", "Port scanning", "Packet flooding"], answer: 0 },
+        { q: "What is the purpose of ARP spoofing?", options: ["To scan for vulnerabilities", "To encrypt network packets", "To overwhelm a network with traffic", "To redirect traffic by falsifying ARP responses"], answer: 3 },
+        { q: "What is the primary purpose of a ping sweep?", options: ["To identify open ports on a single host", "To discover live hosts on a network", "To capture network packets", "To exploit vulnerabilities"], answer: 1 },
+        { q: "What is a common tool used for ARP spoofing?", options: ["Nessus", "Wireshark", "Cain & Abel", "Nmap"], answer: 2 },
+        { q: "What is the main goal of vulnerability scanning?", options: ["To identify weaknesses in a system or network", "To capture network traffic", "To flood a network with packets", "To spoof IP addresses"], answer: 0 },
+        { q: "Which of the following best describes active sniffing?", options: ["Monitoring traffic silently", "Injecting packets or flooding the network to capture traffic", "Encrypting data packets", "Blocking incoming traffic"], answer: 1 },
+        { q: "What is MAC flooding used for?", options: ["To encrypt MAC addresses", "To overwhelm a switch's MAC address table", "To spoof MAC addresses", "To scan for open ports"], answer: 1 },
+        { q: "What does Wi-Fi sniffing primarily target?", options: ["Server logs", "Wireless network packets", "Wired LAN networks", "Firewalls"], answer: 1 },
+        { q: "Which of the following is a countermeasure to packet sniffing?", options: ["Disabling DNS caching", "Using encrypted protocols like HTTPS, SSH", "Use of static IP addresses", "Enabling port mirroring"], answer: 1 },
+        { q: "DNS spoofing is used to:", options: ["Increase website load time", "Redirect users to malicious websites", "Protect DNS servers", "Secure email servers"], answer: 1 },
+        { q: "Which of the following is a countermeasure against sniffing?", options: ["Using unencrypted protocols TLS", "Using hubs instead of switches", "Implementing HTTPS and SSL/TLS", "Disabling firewalls"], answer: 2 },
+        { q: "What is the primary purpose of port scanning?", options: ["Encrypting data", "Identifying open ports and services on a target system", "Closing firewall ports", "Updating system software"], answer: 1 },
+        { q: "What is session hijacking?", options: ["Scanning for open ports on a server", "Stealing a user's active session to gain unauthorized access", "Flooding a network with packets", "Encrypting session data"], answer: 1 },
+        { q: "Which protocol is primarily used in a ping sweep?", options: ["UDP", "TCP", "ICMP", "HTTP"], answer: 2 },
+        { q: "What is the first step in ethical hacking according to reconnaissance techniques?", options: ["Scanning", "Information gathering", "Exploitation", "Reporting"], answer: 1 },
+        { q: "What is a common method to detect sniffing on a network?", options: ["Monitoring for unusual ARP traffic", "Flooding the network with packets", "Scanning for open ports", "Disabling encryption"], answer: 0 },
+        { q: "A ping sweep is used to:", options: ["Detect malware", "Discover active hosts in a network", "Encrypt packets", "Monitor bandwidth usage"], answer: 1 },
+        { q: "What does packet sniffing allow an attacker to do?", options: ["Block all traffic", "Capture and analyze network traffic", "Encrypt outgoing packets", "Disable antivirus software"], answer: 1 },
+        { q: "What is session hijacking?", options: ["Deleting a user session", "Stealing a user session ID to gain unauthorized access", "Logging out a user forcibly", "Encrypting a session"], answer: 1 },
+        { q: "Which tool is widely used for packet sniffing?", options: ["Nmap", "Wireshark", "John the Ripper", "Nessus"], answer: 1 },
+        { q: "Which attack floods the switch's CAM table with fake MAC addresses?", options: ["ARP Spoofing", "MAC Flooding", "DNS Spoofing", "Session Hijacking"], answer: 1 },
+        { q: "What is wiretapping in the context of sniffing?", options: ["Intercepting communication over a physical medium", "Flooding a network with packets", "Encrypting network traffic", "Scanning for open ports"], answer: 0 },
+        { q: "Which tool can be used to detect promiscuous mode (sniffing) on a network?", options: ["Metasploit", "John the Ripper", "Nmap", "Snort"], answer: 3 },
+        { q: "Which type of sniffing is more difficult to detect?", options: ["Active sniffing", "Passive sniffing", "DNS sniffing", "MAC sniffing"], answer: 1 },
+        { q: "Which of the following tools is commonly used for network scanning?", options: ["Wireshark", "Nmap", "Hydra", "Burp Suite"], answer: 1 },
+        { q: "Which protocol can help prevent DNS spoofing?", options: ["ICMP", "DNSSEC", "ARP", "HTTP"], answer: 1 },
+        { q: "Which tool is often used for vulnerability scanning?", options: ["Nikto", "Nessus", "Metasploit", "Wireshark"], answer: 1 }
+      ]
+    },
+    {
+      id: 4,
+      title: "Malware, Enumeration & Access",
+      tagline: "Enumeration, cracking, privilege escalation",
+      questions: [
+        { q: "User enumeration is mainly used to:", options: ["Discover valid usernames", "Crack Wi-Fi passwords", "Install operating systems", "Remove malware"], answer: 0 },
+        { q: "TCP/IP hijacking means:", options: ["Taking over a valid network session", "Installing antivirus", "Deleting files", "Blocking ports"], answer: 0 },
+        { q: "Which tool is used for vulnerability scanning?", options: ["Nessus", "WordPad", "VLC Player", "Photoshop"], answer: 0 },
+        { q: "Which malware looks like good software but is harmful?", options: ["Trojan", "Worm", "Virus", "Rootkit"], answer: 0 },
+        { q: "Which step comes before vulnerability analysis?", options: ["Enumeration", "Malware removal", "Installing antivirus", "Using dictionary attack"], answer: 0 },
+        { q: "Risk assessment means:", options: ["Checking the seriousness of a problem", "Playing games", "Removing accounts", "Installing software"], answer: 0 },
+        { q: "Maintaining access often uses:", options: ["Backdoors or rootkits", "Antivirus", "Screensavers", "Music players"], answer: 0 },
+        { q: "Dictionary attack means:", options: ["Trying words from a list", "Installing dictionary software", "Opening books", "Printing passwords"], answer: 0 },
+        { q: "CVE stands for:", options: ["Common Vulnerabilities and Exposures", "Common Virus Environment", "Computer Virus Error", "Cyber Virtual Entry"], answer: 0 },
+        { q: "Which detection method finds malware by unusual behavior?", options: ["Behavior-based detection", "Signature detection only", "Password cracking", "Enumeration"], answer: 0 },
+        { q: "What helps protect against email hijacking?", options: ["Using TLS/SSL", "Using paint software", "Downloading games", "Formatting drive"], answer: 0 },
+        { q: "Which tool is used in companies to control malware?", options: ["Endpoint security/EDR", "Media Player", "WordPad", "Paint"], answer: 0 },
+        { q: "Rainbow tables are used for:", options: ["Password cracking", "Drawing pictures", "Playing music", "Video editing"], answer: 0 },
+        { q: "Which malware spreads automatically on networks?", options: ["Worm", "Trojan", "Virus", "Spyware"], answer: 0 },
+        { q: "If a weakness cannot be used by an attacker, the risk is:", options: ["Low", "High", "Critical", "Medium"], answer: 0 },
+        { q: "Email hijacking is often done by:", options: ["Stealing login details", "Writing exams", "Removing viruses", "Formatting a system"], answer: 0 },
+        { q: "What is the main goal of enumeration?", options: ["To find usernames and services", "To install malware", "To remove viruses", "To delete accounts"], answer: 0 },
+        { q: "Which of the following is NOT found in enumeration?", options: ["Usernames", "Network shares", "Service banners", "Photos"], answer: 3 },
+        { q: "Hybrid attack means:", options: ["Mixing dictionary words with numbers/symbols", "Copying books", "Using antivirus software", "Changing usernames"], answer: 0 },
+        { q: "Salting passwords protects against:", options: ["Rainbow table attacks", "Dictionary attacks", "Worms", "Viruses"], answer: 0 },
+        { q: "In Windows, which service is often used for system enumeration?", options: ["SMB", "FTP", "DNS", "HTTP"], answer: 0 },
+        { q: "Which tool captures network packets?", options: ["Wireshark", "MS Word", "Excel", "PowerPoint"], answer: 0 },
+        { q: "Privilege escalation means:", options: ["Getting admin rights from a normal account", "Removing admin account", "Shutting down the system", "Installing games"], answer: 0 },
+        { q: "Which tool is commonly used for service enumeration?", options: ["Enum4linux", "Photoshop", "MS Word", "Excel"], answer: 0 },
+        { q: "Brute-force attack means:", options: ["Trying all possible combinations", "Asking the user directly", "Stealing a hard disk", "Deleting files"], answer: 0 },
+        { q: "In TCP hijacking, the attacker predicts:", options: ["Sequence numbers", "Usernames", "Password length", "Antivirus versions"], answer: 0 }
+      ]
+    },
+    {
+      id: 5,
+      title: "Social Engineering & Pen Testing",
+      tagline: "Phishing, DDoS, XSS, testing types",
+      questions: [
+        { q: "Black box testing means:", options: ["Tester only scans networks", "Tester has no prior knowledge of system", "Tester has full system knowledge", "Tester has partial knowledge"], answer: 1 },
+        { q: "The last phase in penetration testing is:", options: ["Scanning", "Reporting", "Exploitation", "Social engineering"], answer: 1 },
+        { q: "Which is a common social engineering attack?", options: ["SQL injection", "Phishing email", "SYN flood", "Rainbow table"], answer: 1 },
+        { q: "Dumpster diving means:", options: ["Attacking network ports", "Collecting information from thrown documents", "Using brute-force passwords", "Sending fake emails"], answer: 1 },
+        { q: "DDoS attack uses:", options: ["A single attacker machine", "Many compromised systems (botnet)", "Strong encryption", "SQL queries"], answer: 1 },
+        { q: "Shoulder surfing can be prevented by:", options: ["Encrypting hard disks", "Using privacy screens", "Installing antivirus", "Increasing bandwidth"], answer: 1 },
+        { q: "Pretexting means:", options: ["Building a false scenario to get data", "Encrypting files", "Denying services", "Sniffing packets"], answer: 0 },
+        { q: "White box testing means:", options: ["No knowledge of system", "Full knowledge of system given to tester", "Only network testing", "Attacks from outside only"], answer: 1 },
+        { q: "Stored XSS means:", options: ["Script deleted after execution", "Script stored in database and executed later", "SQL query stored for reuse", "Malware stored on USB"], answer: 1 },
+        { q: "A reflected XSS attack occurs when:", options: ["Script is stored permanently in a database", "Script is returned immediately by the server in response", "Botnets spread worms", "Virus hides in email attachments"], answer: 1 },
+        { q: "Botnet means:", options: ["A group of firewalls", "A group of hacked computers used for attacks", "A scanning tool", "A security software"], answer: 1 },
+        { q: "SYN flood is a type of:", options: ["Password cracking", "DDoS attack", "Social engineering", "Password encryption"], answer: 1 },
+        { q: "The best defense against social engineering is:", options: ["Antivirus software", "Awareness training", "Password encryption", "Firewalls"], answer: 1 },
+        { q: "Social engineering attacks mainly target:", options: ["Networks", "Humans", "Firewalls", "Databases"], answer: 1 },
+        { q: "Vishing is carried out through:", options: ["Emails", "Voice calls", "Web browsers", "SMS"], answer: 1 }
+      ]
+    }
+  ]
+};
+
+</script>
+<script>
+(function(){
+  "use strict";
+
+  const STORAGE_KEY = "cdtechs_ethhack_quiz_progress_v1";
+
+  // Synthesized Audio using Web Audio API
+  const CyberAudio = {
+    ctx: null,
+    enabled: false,
+    init() {
+      if (this.ctx) return;
+      try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+    },
+    toggle(state) {
+      this.init();
+      this.enabled = state;
+      if (state && this.ctx && this.ctx.state === 'suspended') { this.ctx.resume(); }
+    },
+    play(type) {
+      if (!this.enabled || !this.ctx) return;
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      try {
+        const now = this.ctx.currentTime;
+        switch (type) {
+          case 'click': {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.connect(gain); gain.connect(this.ctx.destination);
+            osc.frequency.setValueAtTime(900, now);
+            osc.frequency.exponentialRampToValueAtTime(100, now + 0.04);
+            gain.gain.setValueAtTime(0.04, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+            osc.start(); osc.stop(now + 0.04);
+            break;
+          }
+          case 'correct': {
+            const osc1 = this.ctx.createOscillator();
+            const osc2 = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc1.connect(gain); osc2.connect(gain); gain.connect(this.ctx.destination);
+            osc1.frequency.setValueAtTime(523.25, now); // C5
+            osc1.frequency.setValueAtTime(659.25, now + 0.07); // E5
+            osc2.frequency.setValueAtTime(783.99, now + 0.14); // G5
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+            osc1.start(now); osc1.stop(now + 0.35);
+            osc2.start(now + 0.07); osc2.stop(now + 0.35);
+            break;
+          }
+          case 'wrong': {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sawtooth'; osc.connect(gain); gain.connect(this.ctx.destination);
+            osc.frequency.setValueAtTime(130, now);
+            osc.frequency.linearRampToValueAtTime(70, now + 0.25);
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+            osc.start(now); osc.stop(now + 0.25);
+            break;
+          }
+          case 'xp': {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.connect(gain); gain.connect(this.ctx.destination);
+            osc.frequency.setValueAtTime(1100, now);
+            osc.frequency.setValueAtTime(1400, now + 0.03);
+            gain.gain.setValueAtTime(0.02, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+            osc.start(); osc.stop(now + 0.12);
+            break;
+          }
+          case 'levelup': {
+            const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99]; // C4, E4, G4, C5, E5, G5
+            notes.forEach((f, idx) => {
+              const osc = this.ctx.createOscillator();
+              const gain = this.ctx.createGain();
+              osc.connect(gain); gain.connect(this.ctx.destination);
+              osc.frequency.setValueAtTime(f, now + idx * 0.05);
+              gain.gain.setValueAtTime(0.04, now + idx * 0.05);
+              gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.05 + 0.3);
+              osc.start(now + idx * 0.05); osc.stop(now + idx * 0.05 + 0.3);
+            });
+            break;
+          }
+          case 'achievement': {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'triangle'; osc.connect(gain); gain.connect(this.ctx.destination);
+            osc.frequency.setValueAtTime(440, now);
+            osc.frequency.setValueAtTime(554.37, now + 0.08);
+            osc.frequency.setValueAtTime(659.25, now + 0.16);
+            osc.frequency.setValueAtTime(880, now + 0.24);
+            gain.gain.setValueAtTime(0.06, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+            osc.start(now); osc.stop(now + 0.5);
+            break;
+          }
+          case 'type': {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.connect(gain); gain.connect(this.ctx.destination);
+            osc.frequency.setValueAtTime(Math.random() * 150 + 350, now);
+            gain.gain.setValueAtTime(0.006, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+            osc.start(); osc.stop(now + 0.02);
+            break;
+          }
+        }
+      } catch(e) {}
+    }
+  };
+
+  // Keyword lookup database for explanations, tips, difficulty, and topics
+  const metadataRules = [
+    // UNIT 1
+    { keys: ["amendment to the indian it act", "it act was amended in"], topic: "Cyber Law & IT Act", difficulty: "Medium", explanation: "The IT (Amendment) Act, 2008 introduced severe penal provisions for cyber terrorism, identity theft, and child pornography. It was passed in Oct 2008 and came into force in Oct 2009.", tip: "Remember 2008 as the critical amendment year for cybersecurity laws in India." },
+    { keys: ["difference between ethical and non-ethical"], topic: "Ethics & Methodology", difficulty: "Easy", explanation: "Ethical hacking requires official permission and written authorization from the target system owner, whereas non-ethical hacking operates illegally and without consent.", tip: "Legality is determined by formal written authorization (Get Out of Jail Free card)." },
+    { keys: ["weakness in a system that can be exploited"], topic: "Core Security Concepts", difficulty: "Easy", explanation: "A vulnerability is a loophole, flaw, or weakness in a system's design, configuration, or code that can be exploited by threat actors to compromise confidentiality, integrity, or availability.", tip: "Think of a vulnerability as an open window in a locked house." },
+    { keys: ["footprinting is a part of which phase", "not typically obtained through footprinting"], topic: "Reconnaissance", difficulty: "Easy", explanation: "Footprinting is the structured gathering of information about a target organization, network, and systems. It is the core foundation of the Reconnaissance phase.", tip: "Gathering information creates the 'blueprint' before an actual scanning attack." },
+    { keys: ["confidentiality principle in the cia triad", "'c' in the cia triad", "availability principle in the cia triad"], topic: "CIA Triad", difficulty: "Easy", explanation: "Confidentiality ensures that only authorized entities can view or access data, preventing unauthorized reading of sensitive documents.", tip: "Confidentiality is all about encryption, access lists, and strict read permissions." },
+    { keys: ["operates without permission but without malicious intent", "without malicious intent but without permission", "works for organizations to find security flaws", "hacker with limited technical skills", "script kiddie is", "hacker who uses skills for malicious purposes", "hacker uses skills for malicious"], topic: "Hacker Classification", difficulty: "Easy", explanation: "Grey-Hat hackers scan without consent but usually with good intentions, whereas White-Hats are fully authorized (defensive) and Black-Hats are malicious (offensive). Script Kiddies copy automated tools.", tip: "Auth determines Hat color: White is legal, Black is illegal, Grey is in-between." },
+    { keys: ["commonly used in ethical hacking", "tool is commonly used in ethical hacking", "tool is used for port scanning"], topic: "Security Tools", difficulty: "Easy", explanation: "Nmap is an industry-standard open-source tool used for active network mapping, scanning hosts, discovering open ports, and operating system detection.", tip: "Network Mapper = Nmap." },
+    { keys: ["disadvantage of ethical hacking"], topic: "Hacking Methodology", difficulty: "Easy", explanation: "Ethical hacking assessments can be costly, time-consuming, and require highly specialized personnel. Additionally, misconfigured tests can disrupt services.", tip: "Securing a complex system takes a continuous investment of time and money." },
+    { keys: ["data is not altered unauthorizedly", "component of the cia triad ensures data is not altered", "integrity in the cia triad means"], topic: "CIA Triad", difficulty: "Easy", explanation: "Integrity ensures that data is stored and transmitted accurately without unauthorized modifications, tampering, or deletions.", tip: "Integrity means data is intact and unaltered." },
+    { keys: ["section of the indian it act, 2000 deals with unauthorized access"], topic: "Cyber Law & IT Act", difficulty: "Hard", explanation: "Section 43 of the IT Act, 2000 details heavy penalties for access, download, extraction of data, or introducing viruses without permission.", tip: "Think Section 43 - the primary civil liability section for data damage." },
+    { keys: ["authorized testing to improve security", "hacking performed with permission to improve security"], topic: "Ethics & Methodology", difficulty: "Easy", explanation: "White-Hat hacking is defensive, legal, and fully authorized penetration testing to patch bugs before malicious hackers exploit them.", tip: "White = Authorized, helpful and constructive." },
+    { keys: ["not an ethical hacking tool"], topic: "Malware vs Tools", difficulty: "Easy", explanation: "WannaCry is a destructive ransomware strain that locked thousands of systems worldwide in 2017. Unlike Nmap or Wireshark, it is purely malicious.", tip: "WannaCry is a real-world threat, not an ethical scanner." },
+    { keys: ["what is 'penetration testing'", "penetration testing", "last phase in penetration testing", "last phase in pen testing", "black box testing", "white box testing"], topic: "Pentesting Concepts", difficulty: "Easy", explanation: "Penetration testing simulates an active cyberattack to find security vulnerabilities under controlled conditions, checking if defenses hold. Black box has no network details, white box has full access details.", tip: "It is a simulated drill for network defenses. Reporting is the final deliverables phase." },
+    { keys: ["phase of hacking involves exploiting vulnerabilities"], topic: "Hacking Phases", difficulty: "Medium", explanation: "Exploitation (Gaining Access) is the phase where an attacker uses an identified vulnerability (e.g., buffer overflow) to run code or take control.", tip: "First you scout (Recon), then scan (Scan), then bypass locks (Exploitation)." },
+    { keys: ["best used for password cracking", "tool is used for password cracking in ethical hacking"], topic: "Password Cracking", difficulty: "Easy", explanation: "John the Ripper and Hydra are powerful utilities for password recovery and brute force logon cracking against local hashes or remote services.", tip: "John 'rips' hashes offline; Hydra forces web/network logins online." },
+    { keys: ["law governs cyber activities in india", "indian law governs cybercrime"], topic: "Cyber Law & IT Act", difficulty: "Easy", explanation: "The Information Technology Act, 2000 provides the legal structure for cyber commerce and defines digital offenses in India.", tip: "IT Act 2000 is the parent legislation for Indian cyber offences." },
+    { keys: ["indian it act, 2000 primarily address"], topic: "Cyber Law & IT Act", difficulty: "Medium", explanation: "The primary aim of the IT Act, 2000 is to provide legal recognition to electronic transactions, e-commerce, and handle cyber threats.", tip: "It legalizes digital signatures and punishes hacker activity." },
+    { keys: ["not a phase in hacking"], topic: "Hacking Phases", difficulty: "Medium", explanation: "Data Encryption is a defensive process. Ethical hacking phases focus on offensive steps: Recon, Scanning, Gaining Access, Maintaining Access, and Covering Tracks.", tip: "Defensive methods like encryption are not steps in the standard hacking kill chain." },
+    { keys: ["purpose of a 'backdoor'", "maintaining access often uses"], topic: "Malware & Access", difficulty: "Easy", explanation: "A backdoor is an undocumented portal installed to bypass security controls and maintain administrative access silently in the future. Rootkits can mask these pathways.", tip: "A backdoor ensures the hacker doesn't have to exploit the vulnerability a second time." },
+    { keys: ["ensures systems are available when needed"], topic: "CIA Triad", difficulty: "Easy", explanation: "Availability means services and data networks are accessible to authorized personnel on demand.", tip: "DDoS attacks target Availability, rendering servers offline." },
+    { keys: ["key skill required for ethical hacking", "not a skill of an ethical hacker"], topic: "Ethics & Methodology", difficulty: "Easy", explanation: "Ethical hackers require specialized network security skills, understanding operating system architecture and communication protocols.", tip: "You must know how systems work to know how to crack them. Money laundering is unrelated." },
+    { keys: ["final step in hacking is"], topic: "Hacking Phases", difficulty: "Easy", explanation: "Covering Tracks is the final stage, where a hacker removes temporary files, system tools, and alters event logs to evade detection.", tip: "Hiding your digital evidence to prevent forensic tracing." },
+    { keys: ["purpose of ethical hacking is to"], topic: "Ethics & Methodology", difficulty: "Easy", explanation: "The core purpose of ethical hacking is to defensively find and patch security weaknesses before threat actors find them.", tip: "Proactive defense by simulating real-world attacks." },
+    { keys: ["gathering information about the target"], topic: "Hacking Phases", difficulty: "Easy", explanation: "Reconnaissance is the initial research phase where you compile domain names, IP address blocks, and organizational intelligence.", tip: "Reconnaissance is gathering intelligence about the battlefield." },
+
+    // UNIT 2
+    { keys: ["targeted during dns fingerprinting", "dns fingerprinting involve"], topic: "DNS Footprinting", difficulty: "Medium", explanation: "DNS fingerprinting targets the Domain Name System server to identify the DNS software type (e.g. BIND) and version to search for vulnerabilities.", tip: "DNS translates domain names to IPs, and fingerprinting queries it for server software info." },
+    { keys: ["perform web application scanning", "web application scanning?"], topic: "Web Scanning", difficulty: "Medium", explanation: "Burp Suite, Nikto, and OWASP ZAP are web scanners designed to find common web vulnerabilities like XSS, SQLi, and misconfigurations.", tip: "Burp Suite intercepts HTTP requests and scans active web targets." },
+    { keys: ["whois lookup provide", "whois lookup", "commonly used to retrieve domain name information", "command-line tool can be used to find domain name", "identify the hosting company of a website"], topic: "Domain Reconnaissance", difficulty: "Easy", explanation: "A WHOIS database lookup provides registration details for a domain, including owner contact info, registrar, and active DNS nameservers.", tip: "WHOIS asks: 'Who is the owner of this domain or IP block?'" },
+    { keys: ["footprinting in the context of reconnaissance"], topic: "Information Gathering", difficulty: "Easy", explanation: "Footprinting is the structured collection of public details (IP blocks, DNS records, tech stacks) about a target system.", tip: "It compiles a high-level picture of the target's attack surface." },
+    { keys: ["source for passive reconnaissance", "passive reconnaissance technique", "passive reconnaissance primarily relies on", "passive reconnaissance preferred in early stages"], topic: "Passive Reconnaissance", difficulty: "Easy", explanation: "Passive reconnaissance collects intelligence from publicly accessible open sources (OSINT) without direct interaction with the target systems.", tip: "Social media, Google searches, and WHOIS lookups leave no trace on target logs." },
+    { keys: ["identifying ip address ranges during footprinting"], topic: "Information Gathering", difficulty: "Medium", explanation: "Identifying IP address blocks helps map the network architecture and locate all active hosts belonging to the target organization.", tip: "Determining the size of the target's IP scope." },
+    { keys: ["web application's underlying technology", "purpose of application fingerprinting", "fingerprinting help an attacker identify", "fingerprinting in cybersecurity?"], topic: "Fingerprinting", difficulty: "Medium", explanation: "Application fingerprinting analyzes server response headers, cookies, and file extensions to identify software types and version numbers.", tip: "Identifying system specs to query CVE databases for known bugs." },
+    { keys: ["commonly used for banner grabbing", "information gathering technique"], topic: "Information Gathering", difficulty: "Medium", explanation: "Banner grabbing queries open network ports using tools like Nmap, Netcat, or Telnet to read the server's version response header.", tip: "Grabbing the text banner a service broadcasts when you connect." },
+    { keys: ["primary goal of reconnaissance"], topic: "Information Gathering", difficulty: "Easy", explanation: "Reconnaissance gathers general information to understand the target's security posture and plan subsequent scanning attacks.", tip: "Recon is the planning and survey stage before firing any scans." },
+    { keys: ["public-facing login form", "website is vulnerable to sql injection", "sql injection work"], topic: "Vulnerabilities", difficulty: "Hard", explanation: "SQL Injection (SQLi) occurs when user inputs are concatenated directly into SQL queries, letting attackers read/manipulate databases.", tip: "SQLi inserts malicious SQL query code to bypass authentication and retrieve DB tables." },
+    { keys: ["part of active reconnaissance", "risk of active reconnaissance", "characteristic of active reconnaissance"], topic: "Active Reconnaissance", difficulty: "Medium", explanation: "Active reconnaissance directly interacts with target systems (e.g. port scanning, ping sweeps), which runs the risk of triggering IDS/IPS alerts.", tip: "Active recon knocks on the door directly, leaving records in the logs." },
+    { keys: ["find the ip address of a domain"], topic: "Domain Reconnaissance", difficulty: "Easy", explanation: "Tools like `nslookup`, `dig`, or `host` query DNS servers to resolve domain names to active IP addresses.", tip: "Name Server Lookup = nslookup." },
+    { keys: ["purpose of dns enumeration", "used for dns enumeration"], topic: "DNS Footprinting", difficulty: "Medium", explanation: "DNS enumeration queries the target's DNS servers to list all host records, subdomains, and mail server paths.", tip: "Dig and Nslookup are standard tools for DNS domain mapping." },
+    { keys: ["gather the history of a website"], topic: "OSINT & Public Data", difficulty: "Easy", explanation: "The Wayback Machine archives historical snapshots of public web pages, exposing deleted directories or legacy developer notes.", tip: "Wayback Machine acts as a public internet time capsule." },
+    { keys: ["make a machine or network resource unavailable"], topic: "Threats & Attacks", difficulty: "Easy", explanation: "Denial of Service (DoS) attacks flood servers with traffic or exploit crashes to make them unavailable to legitimate users.", tip: "DoS = Denial of Service." },
+
+    // UNIT 3
+    { keys: ["ping sweep", "ping sweep?"], topic: "Ping Sweep", difficulty: "Medium", explanation: "A ping sweep sends ICMP echo requests to a range of IP addresses to determine which hosts are online.", tip: "Sweeping a subnet to find live IP addresses using ICMP." },
+    { keys: ["detect sniffers on a network", "detect sniffing on a network"], topic: "Network Defense", difficulty: "Hard", explanation: "Sniffers put interfaces into promiscuous mode. Network nodes can detect this by sending ARP queries with invalid headers and analyzing replies.", tip: "Promiscuous mode handles packets differently, exposing the sniffer interface." },
+    { keys: ["intercepting communication between two parties"], topic: "MITM Attacks", difficulty: "Easy", explanation: "Man-in-the-Middle (MITM) attacks insert the attacker between a sender and receiver, routing traffic through the attacker's system.", tip: "MITM intercepts and potentially modifies active conversations." },
+    { keys: ["session hijacking compromise", "session hijacking?"], topic: "Session Hijacking", difficulty: "Medium", explanation: "Session hijacking steals active session IDs or tokens, letting an attacker impersonate an authenticated user without credentials.", tip: "Stealing active session cookies to bypass login screens." },
+    { keys: ["packet sniffing?", "packet sniffing allow", "packet sniffing", "captures network packets", "tool captures network packets"], topic: "Packet Sniffing", difficulty: "Easy", explanation: "Packet sniffing captures and decodes packets traversing a network segment, exposing unencrypted sensitive data in transit.", tip: "Wireshark is the industry standard GUI packet sniffer." },
+    { keys: ["avoids full tcp handshakes", "syn scan"], topic: "Port Scanning", difficulty: "Medium", explanation: "A SYN scan (half-open scan) sends a SYN packet and waits for a SYN-ACK, but resets the connection before sending the final ACK, preventing log generation.", tip: "SYN scan does not complete the 3-way handshake." },
+    { keys: ["network discovery aim"], topic: "Network Defense", difficulty: "Medium", explanation: "Network discovery locates active computers, switches, routers, and their device properties on a local network segment.", tip: "Mapping out the topology of the local subnet." },
+    { keys: ["vulnerability scanning tool", "vulnerability scanning?"], topic: "Vulnerability Assessment", difficulty: "Medium", explanation: "Vulnerability scanners like Nessus and OpenVAS scan networks and systems, comparing responses to lists of known security exploits.", tip: "Nessus and OpenVAS audit networks for security gaps." },
+    { keys: ["device can make sniffing more difficult in a switched network"], topic: "Network Defense", difficulty: "Medium", explanation: "Unlike Hubs which broadcast all traffic, Switches unicast packets to specific ports, isolating data segments from sniffing hosts.", tip: "Switches check MAC tables to send data only to the destination port." },
+    { keys: ["arp spoofing?", "arp spoofing", "arp spoofing?"], topic: "ARP Spoofing", difficulty: "Hard", explanation: "ARP spoofing floods the LAN with malicious ARP responses, mapping the attacker's MAC address to a legitimate gateway IP address.", tip: "Poisoning the local ARP cache to redirect traffic through the hacker's machine." },
+    { keys: ["active sniffing?"], topic: "Packet Sniffing", difficulty: "Medium", explanation: "Active sniffing is required on switched networks, injecting traffic (like MAC flooding or ARP spoofing) to force switches to broadcast data.", tip: "Active sniffing forces a switch to act like a hub." },
+    { keys: ["mac flooding used for", "floods the switch's cam table"], topic: "MAC Flooding", difficulty: "Hard", explanation: "MAC flooding overwhelms a switch's CAM table with fake MAC addresses, forcing the switch to fail-open and broadcast all subsequent traffic.", tip: "CAM table overflow forces switch into Hub-mode, enabling sniffing." },
+    { keys: ["wi-fi sniffing primarily target"], topic: "Packet Sniffing", difficulty: "Easy", explanation: "Wi-Fi sniffing listens to electromagnetic waves, capturing wireless frames transmitted through the air within range of the antenna.", tip: "Listening to wireless networks using monitor mode." },
+    { keys: ["countermeasure to packet sniffing", "countermeasure against sniffing"], topic: "Network Defense", difficulty: "Easy", explanation: "Encrypting traffic using SSL/TLS (HTTPS), SSH, or VPNs ensures that even if packets are sniffed, they are unreadable cipher text.", tip: "Encryption makes captured packets useless to attackers." },
+    { keys: ["dns spoofing is used to", "prevent dns spoofing"], topic: "DNS Spoofing", difficulty: "Medium", explanation: "DNS spoofing redirects users to malicious addresses by altering DNS records or poisoning caches. DNSSEC prevents this using digital signatures.", tip: "DNS spoofing alters the phonebook map. DNSSEC signs it." },
+    { keys: ["first step in ethical hacking according to reconnaissance"], topic: "Ethics & Methodology", difficulty: "Easy", explanation: "Information gathering is the foundational reconnaissance step where the tester maps domain assets and public details.", tip: "Gather facts first, scan ports second." },
+    { keys: ["wiretapping in the context of sniffing"], topic: "Packet Sniffing", difficulty: "Medium", explanation: "Wiretapping is the physical intercept of communication lines (copper, fiber optic) to listen to raw signal data.", tip: "Physical intercept of cabling." },
+    { keys: ["promiscuous mode"], topic: "Network Defense", difficulty: "Hard", explanation: "Snort is an intrusion detection system (IDS) that can monitor interface behaviors and alert on nodes executing packet capture tasks.", tip: "Snort checks if nodes are capturing unrouted network packets." },
+    { keys: ["sniffing type is more difficult to detect"], topic: "Packet Sniffing", difficulty: "Medium", explanation: "Passive sniffing silently reads broadcast traffic without sending any packets, making it virtually invisible to detection tools.", tip: "Listening silently leaves no footprint on the network." },
+
+    // UNIT 4
+    { keys: ["user enumeration is mainly used to", "goal of enumeration", "not found in enumeration"], topic: "User Enumeration", difficulty: "Medium", explanation: "Enumeration creates active connections to systems to query usernames, system accounts, active shares, and software banners.", tip: "Listing valid users and network resources to target." },
+    { keys: ["tcp/ip hijacking", "tcp hijacking"], topic: "Session Hijacking", difficulty: "Hard", explanation: "TCP hijacking inserts an attacker into an active TCP connection by predicting sequence numbers and spoofing IP headers.", tip: "Hijacking requires predicting the next packet sequence number." },
+    { keys: ["malware looks like good software"], topic: "Malware Types", difficulty: "Easy", explanation: "A Trojan horse disguises itself as legitimate utility software, but executes hidden malicious payloads once run by the user.", tip: "Disguised malicious program = Trojan." },
+    { keys: ["comes before vulnerability analysis"], topic: "Vulnerability Assessment", difficulty: "Medium", explanation: "Enumeration gathers specific configuration data, accounts, and services, which are subsequently analyzed for known flaws.", tip: "Recon -> Scan -> Enum -> Vulnerability Analysis -> Exploitation." },
+    { keys: ["risk assessment means"], topic: "Vulnerability Assessment", difficulty: "Easy", explanation: "Risk assessment calculates the likelihood and impact of a vulnerability being exploited to determine security priorities.", tip: "Assessing risk = Likelihood × Severity." },
+    { keys: ["dictionary attack", "hybrid attack"], topic: "Password Cracking", difficulty: "Easy", explanation: "Dictionary attacks test thousands of wordlist words. Hybrid attacks append numbers and symbols to those dictionary words.", tip: "Wordlist = Dictionary; Wordlist + Numbers = Hybrid." },
+    { keys: ["cve stands for"], topic: "Vulnerability Assessment", difficulty: "Easy", explanation: "CVE stands for Common Vulnerabilities and Exposures, the standard public dictionary for tracking cataloged security flaws.", tip: "CVE = Common Vulnerabilities and Exposures." },
+    { keys: ["detection method finds malware by unusual behavior"], topic: "Malware Types", difficulty: "Medium", explanation: "Behavior-based detection monitors program activities (file edits, process injections) rather than static binary signatures.", tip: "Detecting malware by what it DOES, not how it looks." },
+    { keys: ["protect against email hijacking"], topic: "Session Hijacking", difficulty: "Easy", explanation: "Using SSL/TLS (HTTPS/IMAPS/SMTPS) encrypts session parameters and logins, stopping intercept attacks from stealing account access.", tip: "Encryption secures authentication cookies and login streams." },
+    { keys: ["control malware?", "control malware in companies"], topic: "Malware Types", difficulty: "Medium", explanation: "Endpoint Detection and Response (EDR) agents monitor corporate endpoints for real-time threat behaviors and quarantine files.", tip: "EDR = Endpoint Detection and Response." },
+    { keys: ["rainbow tables are used for", "salting passwords protects against"], topic: "Password Cracking", difficulty: "Hard", explanation: "Rainbow tables are precomputed database tables of hashes. Password Salting appends random data before hashing, rendering tables useless.", tip: "Salting forces attackers to hash dictionaries per user, defeating precomputed tables." },
+    { keys: ["malware spreads automatically on networks"], topic: "Malware Types", difficulty: "Easy", explanation: "A Worm is self-replicating malware that propagates across network nodes automatically by exploiting operating system flaws.", tip: "Worms crawl across networks automatically. Viruses need host files." },
+    { keys: ["weakness cannot be used by an attacker"], topic: "Vulnerability Assessment", difficulty: "Easy", explanation: "If a vulnerability is non-exploitable (e.g. mitigated by firewalls or offline), the overall risk is classified as low.", tip: "No exploit path = Low practical risk." },
+    { keys: ["email hijacking is often done by"], topic: "Session Hijacking", difficulty: "Easy", explanation: "Email accounts are typically hijacked by stealing login credentials via phishing pages, keyloggers, or credential stuffing.", tip: "Stealing authentication values directly." },
+    { keys: ["windows, which service is often used for system enumeration"], topic: "Windows Enumeration", difficulty: "Medium", explanation: "Server Message Block (SMB) on port 445 is commonly targeted to enumerate active shares, domains, and account names on Windows networks.", tip: "SMB runs local file shares and network directory lookups." },
+    { keys: ["privilege escalation means"], topic: "Privilege Escalation", difficulty: "Medium", explanation: "Privilege escalation is the process of exploiting system bugs to elevate user permissions from local access to administrator/root.", tip: "Upgrading from Guest / Standard User to Root / Admin." },
+
+    // UNIT 5
+    { keys: ["black box testing"], topic: "Penetration Testing", difficulty: "Medium", explanation: "Black box testing simulates an external hacker, providing the pen tester with zero prior knowledge of network structures or codes.", tip: "Black Box = Blind testing with no system specs." },
+    { keys: ["last phase in penetration testing", "last phase in pen testing"], topic: "Penetration Testing", difficulty: "Easy", explanation: "Reporting is the final and most important phase, compiling findings, risks, and remediation advice for corporate stakeholders.", tip: "The final deliverable is always the formal Security Audit Report." },
+    { keys: ["common social engineering attack", "social engineering attacks mainly target", "defense against social engineering"], topic: "Social Engineering", difficulty: "Easy", explanation: "Social engineering targets human psychology to trick users into revealing secrets. Phishing emails and awareness training are core vectors.", tip: "Hacking the human operating system rather than the machine." },
+    { keys: ["dumpster diving"], topic: "Social Engineering", difficulty: "Easy", explanation: "Dumpster diving is searching physical waste bins for discarded documents (passwords, invoices, manuals) containing system secrets.", tip: "Digging through trash for physical intelligence." },
+    { keys: ["ddos attack uses", "botnet means"], topic: "DDoS Attacks", difficulty: "Medium", explanation: "Distributed Denial of Service (DDoS) attacks orchestrate networks of compromised devices (botnets) to flood targets with traffic.", tip: "DDoS relies on a zombie botnet of many distributed machines." },
+    { keys: ["shoulder surfing"], topic: "Social Engineering", difficulty: "Easy", explanation: "Shoulder surfing is physically looking over a user's shoulder to read passwords, PINs, or confidential documents on screen.", tip: "Privacy screens narrow screen viewing angles, blocking shoulder lookers." },
+    { keys: ["pretexting"], topic: "Social Engineering", difficulty: "Medium", explanation: "Pretexting is creating a fabricated scenario (pretext) to impersonate authority figures and convince users to surrender secrets.", tip: "Pretexting builds a false story or role to gain trust." },
+    { keys: ["stored xss", "reflected xss"], topic: "Web Vulnerabilities (XSS)", difficulty: "Hard", explanation: "Stored XSS stores script payloads permanently in web databases. Reflected XSS reflects scripts instantly from url payloads.", tip: "Stored = DB persistence; Reflected = Immediate URL response." },
+    { keys: ["syn flood is a type of"], topic: "DDoS Attacks", difficulty: "Medium", explanation: "A SYN flood targets TCP's 3-way handshake, flooding servers with SYN requests without responding to SYN-ACKs, filling server queue buffers.", tip: "Flooding SYN connections to exhaust handshake memory buffers." },
+    { keys: ["vishing is"], topic: "Social Engineering", difficulty: "Easy", explanation: "Vishing is voice phishing, executing social engineering attacks over telephone voice calls to capture user credit cards or details.", tip: "Vishing = Voice + Phishing." }
+  ];
+
+  function getQuestionMetadata(qText, unitId) {
+    const norm = qText.toLowerCase().trim();
+    const match = metadataRules.find(r => r.keys.some(k => norm.includes(k)));
+    if (match) {
+      return { topic: match.topic, difficulty: match.difficulty, explanation: match.explanation, tip: match.tip };
+    }
+    // Dynamic defaults per unit
+    let topic = "General Cyber Security", difficulty = "Medium";
+    let explanation = "This question covers core principles of defensive and offensive security controls.";
+    let tip = "Review the concepts of the CIA Triad and penetration testing standards.";
+    if (unitId === 1) { topic = "Foundations & Legal Framework"; difficulty = "Easy"; }
+    else if (unitId === 2) { topic = "Reconnaissance & Footprinting"; difficulty = "Medium"; }
+    else if (unitId === 3) { topic = "Scanning, Sniffing & MITM"; difficulty = "Medium"; }
+    else if (unitId === 4) { topic = "Malware, Enumeration & Access"; difficulty = "Hard"; }
+    else if (unitId === 5) { topic = "Social Engineering & Pen Testing"; difficulty = "Medium"; }
+    return { topic, difficulty, explanation, tip };
+  }
+
+  // Enrich unit question bank dynamically on startup
+  QUIZ_DATA.units.forEach(u => {
+    u.questions.forEach(q => {
+      const meta = getQuestionMetadata(q.q, u.id);
+      q.explanation = meta.explanation;
+      q.tip = meta.tip;
+      q.difficulty = meta.difficulty;
+      q.topic = meta.topic;
+    });
+  });
+
+  const ACHIEVEMENTS = [
+    { id: "first_quiz", icon: "🚀", name: "First Entry", desc: "Initiate your first session.", requirement: "Complete any unit once." },
+    { id: "first_perfect", icon: "🎯", name: "Flawless Authentication", desc: "100% score cleared.", requirement: "Get 100% on any unit." },
+    { id: "solved_50", icon: "🕵️", name: "SOC Specialist", desc: "50 correct answers.", requirement: "Solve 50 questions correctly overall." },
+    { id: "solved_100", icon: "👑", name: "Elite Operator", desc: "100 correct answers.", requirement: "Solve 100 questions correctly overall." },
+    { id: "streak_10", icon: "🔥", name: "Persistent Threat", desc: "10 answer streak in a quiz.", requirement: "Reach a streak of 10 in any quiz." },
+    { id: "recon_master", icon: "🛰️", name: "Recon Master", desc: "Target mapped.", requirement: "Clear Unit 2 with >= 90% accuracy." },
+    { id: "malware_hunter", icon: "☣️", name: "Malware Hunter", desc: "Payload analyzed.", requirement: "Clear Unit 4 with >= 90% accuracy." },
+    { id: "social_engineer", icon: "👥", name: "Social Engineer", desc: "Human firewall bypassed.", requirement: "Clear Unit 5 with >= 90% accuracy." },
+    { id: "zero_mistakes", icon: "🛡️", name: "Zero Mistakes", desc: "Flawless intrusion.", requirement: "Finish any unit with 100% score." },
+    { id: "ethical_hacker", icon: "🌌", name: "Legendary Architect", desc: "All units cleared.", requirement: "Clear all 5 units in the database." }
+  ];
+
+  const RANKS = [
+    { xp: 0, icon: "🐣", name: "Script Kiddie", desc: "Just booted up Kali for the first time.", color: "#a0aec0" },
+    { xp: 150, icon: "📁", name: "SOC Intern", desc: "Monitoring alerts and sorting false positives.", color: "#4fd1c5" },
+    { xp: 400, icon: "🛡️", name: "Junior Analyst", desc: "Triaging incidents and analyzing firewall logs.", color: "#63b3ed" },
+    { xp: 800, icon: "🧱", name: "Blue Team Defender", desc: "Hardening systems and configuring IDS/IPS policies.", color: "#4299e1" },
+    { xp: 1300, icon: "🕵️", name: "Recon Specialist", desc: "Active and passive info gathering is second nature.", color: "#ed64a6" },
+    { xp: 1900, icon: "⚔️", name: "Penetration Tester", desc: "Exploiting misconfigurations and bypass controls.", color: "#f6ad55" },
+    { xp: 2600, icon: "☣️", name: "Exploit Developer", desc: "Writing custom payloads and weaponizing buffer overflows.", color: "#ecc94b" },
+    { xp: 3400, icon: "💥", name: "Red Team Operator", desc: "Executing full-scope adversarial simulations.", color: "#f56565" },
+    { xp: 4300, icon: "👑", name: "Senior Pentester", desc: "Lead auditor, discovering zero-days in enterprise architectures.", color: "#b7791f" },
+    { xp: 5300, icon: "👁️", name: "Elite Hacker", desc: "Root access achieved on everything. Code name known in dark alleys.", color: "#3ef2a8" },
+    { xp: 6500, icon: "🥷", name: "Cyber Ninja", desc: "Leaving absolutely zero traces. Invisible and lethal in cyberspace.", color: "#805ad5" },
+    { xp: 8000, icon: "🌌", name: "Legend", desc: "Mythical entity. The architect of the systems others try to hack.", color: "#e2e8f0" }
+  ];
+
+  function getRank(xp) {
+    let r = RANKS[0];
+    for (const rk of RANKS) { if (xp >= rk.xp) r = rk; }
+    return r;
+  }
+
+  function getStartOfWeekTimestamp() {
+    const d = new Date();
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    return new Date(d.setDate(diff)).setHours(0, 0, 0, 0);
+  }
+
+  function loadProgress() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        // Migrate to support XP and Achievements if missing
+        if (parsed && typeof parsed === "object") {
+          let hasChange = false;
+          if (parsed.xp === undefined) {
+            let calculatedXp = 0;
+            QUIZ_DATA.units.forEach(u => {
+              const up = parsed[u.id];
+              if (up) {
+                calculatedXp += up.best * 10;
+                if (up.attempts > 0 && up.best === u.questions.length) {
+                  calculatedXp += 200 + 400; // completion + perfect bonus
+                }
+              }
+            });
+            parsed.xp = calculatedXp;
+            hasChange = true;
+          }
+          if (!parsed.achievements) { parsed.achievements = []; hasChange = true; }
+          if (!parsed.completedDates) { parsed.completedDates = []; hasChange = true; }
+          if (!parsed.weeklyXp) { parsed.weeklyXp = { startOfWeek: getStartOfWeekTimestamp(), xp: 0 }; hasChange = true; }
+          if (parsed.soundEnabled === undefined) { parsed.soundEnabled = false; hasChange = true; }
+          if (hasChange) localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+          return parsed;
+        }
+      }
+    } catch(e) {}
+    
+    const fresh = {
+      xp: 0,
+      achievements: [],
+      completedDates: [],
+      weeklyXp: { startOfWeek: getStartOfWeekTimestamp(), xp: 0 },
+      soundEnabled: false
+    };
+    QUIZ_DATA.units.forEach(u => {
+      fresh[u.id] = { best: 0, attempts: 0, bestStreak: 0, lastMissed: [] };
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(fresh));
+    return fresh;
+  }
+
+  function saveProgress() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(progress)); } catch(e) {}
+  }
+
+  let progress = loadProgress();
+
+  // Validate sound state on load
+  CyberAudio.toggle(progress.soundEnabled);
+
+  // shuffle helper (Fisher-Yates)
+  function shuffle(arr) {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // ---------- DOM refs ----------
+  const viewDash = document.getElementById('view-dashboard');
+  const viewQuiz = document.getElementById('view-quiz');
+  const viewResults = document.getElementById('view-results');
+  const pathCrumb = document.getElementById('pathCrumb');
+
+  const dashGrid = document.getElementById('dashGrid');
+  const miniUnits = document.getElementById('miniUnits');
+  const totalScoreEl = document.getElementById('totalScore');
+  const totalMaxEl = document.getElementById('totalMax');
+  const trackerBar = document.getElementById('trackerBar');
+  const rankIcon = document.getElementById('rankIcon');
+  const rankName = document.getElementById('rankName');
+  const rankDesc = document.getElementById('rankDesc');
+  const resetAllBtn = document.getElementById('resetAllBtn');
+
+  const qUnitId = document.getElementById('qUnitId');
+  const qUnitTitle = document.getElementById('qUnitTitle');
+  const qIndex = document.getElementById('qIndex');
+  const qTotal = document.getElementById('qTotal');
+  const qStreak = document.getElementById('qStreak');
+  const progressTrack = document.getElementById('progressTrack');
+  const qEyebrow = document.getElementById('qEyebrow');
+  const qText = document.getElementById('qText');
+  const optList = document.getElementById('optList');
+  const feedback = document.getElementById('feedback');
+  const nextBtn = document.getElementById('nextBtn');
+  const quitBtn = document.getElementById('quitBtn');
+
+  const resBadge = document.getElementById('resBadge');
+  const resTitle = document.getElementById('resTitle');
+  const resSub = document.getElementById('resSub');
+  const resScore = document.getElementById('resScore');
+  const resAcc = document.getElementById('resAcc');
+  const resStreak = document.getElementById('resStreak');
+  const resMiss = document.getElementById('resMiss');
+  const reviewList = document.getElementById('reviewList');
+  const retryBtn = document.getElementById('retryBtn');
+  const dashBtn = document.getElementById('dashBtn');
+
+  // New DOM elements
+  const audioToggle = document.getElementById('audioToggle');
+  const achievementsGrid = document.getElementById('achievementsGrid');
+  const welcomeAgentName = document.getElementById('welcomeAgentName');
+  const rankXpText = document.getElementById('rankXpText');
+  const rankXpBar = document.getElementById('rankXpBar');
+  const statsSolved = document.getElementById('statsSolved');
+  const statsAccuracy = document.getElementById('statsAccuracy');
+  const statsStreak = document.getElementById('statsStreak');
+  const statsCompletedUnits = document.getElementById('statsCompletedUnits');
+  const statsDailyGoal = document.getElementById('statsDailyGoal');
+  const statsWeeklyGoal = document.getElementById('statsWeeklyGoal');
+  const resXpGained = document.getElementById('resXpGained');
+  const allReviewTab = document.getElementById('allReviewTab');
+  const missedReviewTab = document.getElementById('missedReviewTab');
+  const timerText = document.getElementById('timerText');
+  const timerFill = document.getElementById('timerFill');
+  const elapsedText = document.getElementById('elapsedText');
+
+  // ---------- state ----------
+  let session = null; 
+  let secondsRemaining = 30;
+  let elapsedTimerInterval = null;
+  let questionTimerInterval = null;
+  let elapsedTime = 0;
+  let currentReviewFilter = 'missed'; // 'missed' or 'all'
+
+  // Audio Toggle Action
+  if (audioToggle) {
+    const updateAudioLabel = () => {
+      audioToggle.textContent = progress.soundEnabled ? '🔊 AUDIO: ON' : '🔇 AUDIO: OFF';
+    };
+    if (progress.soundEnabled) audioToggle.classList.add('active');
+    updateAudioLabel();
+    audioToggle.addEventListener('click', () => {
+      progress.soundEnabled = !progress.soundEnabled;
+      audioToggle.classList.toggle('active', progress.soundEnabled);
+      CyberAudio.toggle(progress.soundEnabled);
+      updateAudioLabel();
+      saveProgress();
+      CyberAudio.play('click');
+    });
+  }
+
+  function showView(name) {
+    viewDash.classList.add('hidden');
+    viewQuiz.classList.add('hidden');
+    viewResults.classList.add('hidden');
+    if (name === 'dash') { viewDash.classList.remove('hidden'); pathCrumb.innerHTML = '~/dashboard'; }
+    if (name === 'quiz') { viewQuiz.classList.remove('hidden'); pathCrumb.innerHTML = `~/dashboard/<span class="seg">unit-${session.unit.id}</span>`; }
+    if (name === 'results') { viewResults.classList.remove('hidden'); pathCrumb.innerHTML = `~/dashboard/unit-${session.unit.id}/<span class="seg">results</span>`; }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Floating XP Animation
+  function showFloatingXp(amount, element) {
+    if (!element) return;
+    const rect = element.getBoundingClientRect();
+    const floating = document.createElement('div');
+    floating.className = 'floating-xp-gain';
+    floating.innerHTML = `+${amount} XP`;
+    floating.style.left = `${rect.left + rect.width / 2}px`;
+    floating.style.top = `${rect.top}px`;
+    document.body.appendChild(floating);
+    
+    CyberAudio.play('xp');
+    setTimeout(() => { floating.remove(); }, 1000);
+  }
+
+  // Toast notifications for achievements
+  function showAchievementToast(id) {
+    const ach = ACHIEVEMENTS.find(a => a.id === id);
+    if (!ach) return;
+    const toast = document.createElement('div');
+    toast.className = 'achievement-toast';
+    toast.innerHTML = `
+      <div class="toast-icon">${ach.icon}</div>
+      <div class="toast-content">
+        <div class="toast-title">ACHIEVEMENT UNLOCKED</div>
+        <div class="toast-name">${ach.name}</div>
+      </div>
+    `;
+    document.body.appendChild(toast);
+    CyberAudio.play('achievement');
+    setTimeout(() => { toast.classList.add('show'); }, 100);
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => { toast.remove(); }, 400);
+    }, 4000);
+  }
+
+  // Evaluate and grant Achievements
+  function checkAchievements() {
+    progress.achievements = progress.achievements || [];
+    const unlock = (id) => {
+      if (!progress.achievements.includes(id)) {
+        progress.achievements.push(id);
+        saveProgress();
+        showAchievementToast(id);
+      }
+    };
+
+    let totalAttempts = 0, totalBest = 0, clearedAllCount = 0;
+    let hasPerfect = false;
+    let maxBestStreak = 0;
+
+    QUIZ_DATA.units.forEach(u => {
+      const p = progress[u.id] || { best: 0, attempts: 0, bestStreak: 0 };
+      totalAttempts += p.attempts;
+      totalBest += p.best;
+      maxBestStreak = Math.max(maxBestStreak, p.bestStreak);
+      if (p.attempts > 0 && p.best === u.questions.length) hasPerfect = true;
+      if (p.best > 0) clearedAllCount++;
+    });
+
+    if (totalAttempts > 0) unlock("first_quiz");
+    if (hasPerfect) unlock("first_perfect");
+    if (totalBest >= 50) unlock("solved_50");
+    if (totalBest >= 100) unlock("solved_100");
+    if (maxBestStreak >= 10) unlock("streak_10");
+
+    const u2 = progress[2] || { best: 0 };
+    const u2Max = QUIZ_DATA.units.find(u => u.id === 2).questions.length;
+    if (u2Max && (u2.best / u2Max) >= 0.9) unlock("recon_master");
+
+    const u4 = progress[4] || { best: 0 };
+    const u4Max = QUIZ_DATA.units.find(u => u.id === 4).questions.length;
+    if (u4Max && (u4.best / u4Max) >= 0.9) unlock("malware_hunter");
+
+    const u5 = progress[5] || { best: 0 };
+    const u5Max = QUIZ_DATA.units.find(u => u.id === 5).questions.length;
+    if (u5Max && (u5.best / u5Max) >= 0.9) unlock("social_engineer");
+
+    if (hasPerfect) unlock("zero_mistakes");
+    if (clearedAllCount === 5) unlock("ethical_hacker");
+  }
+
+  // Render Achievements Drawer
+  function renderAchievements() {
+    if (!achievementsGrid) return;
+    achievementsGrid.innerHTML = '';
+    ACHIEVEMENTS.forEach(ach => {
+      const unlocked = progress.achievements.includes(ach.id);
+      const badge = document.createElement('div');
+      badge.className = `ach-badge ${unlocked ? 'unlocked' : 'locked'}`;
+      badge.innerHTML = `
+        <div class="ach-icon">${unlocked ? ach.icon : '🔒'}</div>
+        <div class="ach-info">
+          <div class="ach-name">${unlocked ? ach.name : 'Classified'}</div>
+          <div class="ach-desc">${ach.desc}</div>
+          <div class="ach-req">Requirement: ${ach.requirement}</div>
+        </div>
+      `;
+      achievementsGrid.appendChild(badge);
+    });
+  }
+
+  // Rank Promotion Overlay Modal
+  function showRankPromotion(oldRank, newRank) {
+    const overlay = document.createElement('div');
+    overlay.className = 'rank-promotion-overlay';
+    overlay.innerHTML = `
+      <div class="rank-promo-card">
+        <div class="glitch-title">RANK PROMOTED</div>
+        <div class="rank-badge-large">${newRank.icon}</div>
+        <div class="rank-name-large">${newRank.name}</div>
+        <div class="rank-desc-large">${newRank.desc}</div>
+        <button class="primary-btn" style="margin: 0 auto;" id="rankAckBtn">[ ACKNOWLEDGE ]</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    CyberAudio.play('levelup');
+    document.getElementById('rankAckBtn').addEventListener('click', () => {
+      overlay.remove();
+    });
+  }
+
+  // Goals Check
+  function checkGoals() {
+    const today = new Date().toISOString().split('T')[0];
+    const dailyCompleted = progress.completedDates && progress.completedDates.includes(today);
+    
+    if (statsDailyGoal) {
+      statsDailyGoal.textContent = dailyCompleted ? "1 / 1 (DONE)" : "0 / 1 INCOMPLETE";
+      statsDailyGoal.parentElement.classList.toggle('completed', dailyCompleted);
+    }
+
+    // Weekly goal check (Earn 500 XP)
+    const currentStart = getStartOfWeekTimestamp();
+    progress.weeklyXp = progress.weeklyXp || { startOfWeek: currentStart, xp: 0 };
+    if (progress.weeklyXp.startOfWeek !== currentStart) {
+      progress.weeklyXp.startOfWeek = currentStart;
+      progress.weeklyXp.xp = 0;
+      saveProgress();
+    }
+    const weeklyCompleted = progress.weeklyXp.xp >= 500;
+    if (statsWeeklyGoal) {
+      statsWeeklyGoal.textContent = `${progress.weeklyXp.xp} / 500 XP`;
+      statsWeeklyGoal.parentElement.classList.toggle('completed', weeklyCompleted);
+    }
+  }
+
+  // ---------- DASHBOARD RENDER ----------
+  function renderDashboard() {
+    dashGrid.innerHTML = '';
+    miniUnits.innerHTML = '';
+    let totalBest = 0, totalMax = 0, totalAttempts = 0, maxStreak = 0, completedUnitsCount = 0;
+
+    // Check goals week boundaries
+    checkGoals();
+
+    // Map difficulty and metadata values on unit cards
+    const unitMetadata = {
+      1: { difficulty: "🟢 Easy", duration: "15 min", icon: "Foundations & Legal Framework", emoji: "🛡️" },
+      2: { difficulty: "🟢 Easy", duration: "15 min", icon: "Reconnaissance & Footprinting", emoji: "🕵️" },
+      3: { difficulty: "🟡 Medium", duration: "20 min", icon: "Scanning, Sniffing & MITM", emoji: "🛰️" },
+      4: { difficulty: "🔴 Hard", duration: "15 min", icon: "Malware, Enumeration & Access", emoji: "☣️" },
+      5: { difficulty: "🟡 Medium", duration: "10 min", icon: "Social Engineering & Pen Testing", emoji: "👥" }
+    };
+
+    QUIZ_DATA.units.forEach(u => {
+      const p = progress[u.id] || { best: 0, attempts: 0, bestStreak: 0, lastMissed: [] };
+      const max = u.questions.length;
+      totalBest += p.best;
+      totalMax += max;
+      totalAttempts += p.attempts;
+      maxStreak = Math.max(maxStreak, p.bestStreak);
+      const pct = max ? Math.round((p.best / max) * 100) : 0;
+
+      let statusClass = 'locked', statusText = 'NOT STARTED';
+      if (p.attempts > 0 && p.best < max) { statusClass = 'progress'; statusText = 'IN PROGRESS'; }
+      if (p.best === max && max > 0) { statusClass = 'done'; statusText = 'CLEARED'; completedUnitsCount++; }
+
+      const barColor = pct >= 100 ? 'var(--green)' : (pct > 0 ? 'var(--amber)' : 'var(--line)');
+      const meta = unitMetadata[u.id];
+
+      const card = document.createElement('div');
+      card.className = 'unit-card';
+      card.style.setProperty('--bar-color', barColor);
+      card.innerHTML = `
+        <div class="unit-card-header">
+          <span class="u-id">UNIT ${String(u.id).padStart(2, '0')}</span>
+          <span class="u-status ${statusClass}">${statusText}</span>
+        </div>
+        <div class="u-title-row">
+          <span class="u-icon">${meta.emoji}</span>
+          <div class="u-title">${u.title}</div>
+        </div>
+        <div class="u-tag">${u.tagline}</div>
+        <div class="u-progress-row">
+          <div class="u-score-display">${p.best} <span>/ ${max} max · ${pct}%</span></div>
+        </div>
+        <div class="u-bar"><div class="u-bar-fill" style="width:${pct}%"></div></div>
+        <div class="u-footer">
+          <div class="u-badge-detail">
+            <span class="u-difficulty ${meta.difficulty.includes("Easy") ? "easy" : meta.difficulty.includes("Medium") ? "medium" : "hard"}">${meta.difficulty}</span>
+            <span>⏱ ${meta.duration}</span>
+            <span>+${u.id * 50 + 200} XP</span>
+          </div>
+          <div class="u-cta">${p.attempts > 0 ? 're-run scan' : 'initialize scan'}</div>
+        </div>
+      `;
+      card.addEventListener('click', () => { CyberAudio.play('click'); startQuizWithTerminalEffect(u.id); });
+      dashGrid.appendChild(card);
+
+      const mu = document.createElement('div');
+      mu.className = 'mini-unit';
+      mu.innerHTML = `<div class="mu-n">U${u.id}</div><div class="mu-v" style="color:${pct >= 100 ? 'var(--green)' : pct > 0 ? 'var(--amber)' : 'var(--text-dim)'}">${pct}%</div>`;
+      miniUnits.appendChild(mu);
+    });
+
+    totalScoreEl.textContent = totalBest;
+    totalMaxEl.textContent = totalMax;
+    const overallPct = totalMax ? Math.round((totalBest / totalMax) * 100) : 0;
+    trackerBar.style.width = overallPct + '%';
+
+    // Ranks UI Setup
+    progress.xp = progress.xp || 0;
+    const rank = getRank(progress.xp);
+    rankIcon.textContent = rank.icon;
+    rankName.textContent = rank.name;
+    rankName.style.color = rank.color;
+    rankDesc.textContent = rank.desc;
+
+    // XP details in Dashboard
+    const nextRankIdx = RANKS.findIndex(r => r.name === rank.name) + 1;
+    const nextRank = nextRankIdx < RANKS.length ? RANKS[nextRankIdx] : null;
+    if (nextRank) {
+      const xpNeededForNext = nextRank.xp - rank.xp;
+      const xpProgressInLevel = progress.xp - rank.xp;
+      const levelPct = Math.min(100, Math.round((xpProgressInLevel / xpNeededForNext) * 100));
+      if (rankXpText) rankXpText.textContent = `${progress.xp} / ${nextRank.xp} XP (Next Rank: ${nextRank.name})`;
+      if (rankXpBar) rankXpBar.style.width = `${levelPct}%`;
+    } else {
+      if (rankXpText) rankXpText.textContent = `${progress.xp} XP (MAX RANK ACHIEVED)`;
+      if (rankXpBar) rankXpBar.style.width = `100%`;
+    }
+
+    // Top metrics console
+    if (statsSolved) statsSolved.textContent = totalBest;
+    if (statsAccuracy) statsAccuracy.textContent = overallPct + '%';
+    if (statsStreak) statsStreak.textContent = maxStreak;
+    if (statsCompletedUnits) statsCompletedUnits.textContent = completedUnitsCount;
+
+    if (welcomeAgentName) {
+      welcomeAgentName.innerHTML = `Welcome Agent: <span style="color: var(--green);">root@cdtechs</span> [xp: <b>${progress.xp}</b>]`;
+    }
+
+    checkAchievements();
+    renderAchievements();
+  }
+
+  resetAllBtn.addEventListener('click', () => {
+    CyberAudio.play('click');
+    if (confirm('Wipe all quiz progress? This cannot be undone.')) {
+      progress = {
+        xp: 0,
+        achievements: [],
+        completedDates: [],
+        weeklyXp: { startOfWeek: getStartOfWeekTimestamp(), xp: 0 },
+        soundEnabled: progress.soundEnabled
+      };
+      QUIZ_DATA.units.forEach(u => {
+        progress[u.id] = { best: 0, attempts: 0, bestStreak: 0, lastMissed: [] };
+      });
+      saveProgress();
+      renderDashboard();
+    }
+  });
+
+  // Terminal boot effect helper
+  function startQuizWithTerminalEffect(unitId) {
+    const termOverlay = document.createElement('div');
+    termOverlay.className = 'terminal-load-overlay';
+    termOverlay.innerHTML = `
+      <div class="terminal-load-box">
+        <div class="term-line"><span class="term-prompt">root@cdtechs:~$</span> <span>./start_quiz --unit ${unitId}</span></div>
+        <div class="term-log" id="termLog"></div>
+      </div>
+    `;
+    document.body.appendChild(termOverlay);
+
+    const logs = [
+      "[+] Verifying security authorization tokens...",
+      "[+] Mounting encrypted questions payload database...",
+      "[+] Initiating active footprint mapping on Unit " + unitId + "...",
+      "[+] Session ID generated: 0x" + Math.random().toString(16).substring(2, 8).toUpperCase(),
+      "[+] Connection secured. ACCESS GRANTED."
+    ];
+
+    let i = 0;
+    function printNextLog() {
+      if (i < logs.length) {
+        const line = document.createElement('div');
+        line.className = 'term-log-line';
+        line.textContent = logs[i];
+        document.getElementById('termLog').appendChild(line);
+        CyberAudio.play('type');
+        i++;
+        setTimeout(printNextLog, 150 + Math.random() * 150);
+      } else {
+        setTimeout(() => {
+          termOverlay.style.transition = 'opacity 0.25s ease';
+          termOverlay.style.opacity = '0';
+          setTimeout(() => {
+            termOverlay.remove();
+            startQuiz(unitId);
+          }, 250);
+        }, 350);
+      }
+    }
+    setTimeout(printNextLog, 300);
+  }
+
+  // ---------- QUIZ LOGIC ----------
+  function startQuiz(unitId) {
+    const unit = QUIZ_DATA.units.find(u => u.id === unitId);
+    const qs = shuffle(unit.questions).map(q => {
+      const correctText = q.options[q.answer];
+      const opts = shuffle(q.options);
+      return { 
+        q: q.q, 
+        options: opts, 
+        correctIndex: opts.indexOf(correctText),
+        explanation: q.explanation,
+        tip: q.tip,
+        difficulty: q.difficulty,
+        topic: q.topic
+      };
+    });
+    
+    session = {
+      unit, questions: qs, idx: 0, score: 0, streak: 0, bestStreak: 0,
+      answered: false, results: [], xpEarned: 0
+    };
+    
+    elapsedTime = 0;
+    startElapsedTimer();
+    showView('quiz');
+    renderQuestion();
+  }
+
+  // Question timer
+  function startQuestionTimer() {
+    clearInterval(questionTimerInterval);
+    secondsRemaining = 30;
+    updateQuestionTimerUI();
+    questionTimerInterval = setInterval(() => {
+      secondsRemaining--;
+      updateQuestionTimerUI();
+      if (secondsRemaining <= 0) {
+        clearInterval(questionTimerInterval);
+        handleTimeout();
+      }
+    }, 1000);
+  }
+
+  function updateQuestionTimerUI() {
+    if (!timerText || !timerFill) return;
+    timerText.textContent = secondsRemaining + 's';
+    const pct = (secondsRemaining / 30) * 100;
+    timerFill.style.strokeDasharray = `${pct}, 100`;
+
+    if (secondsRemaining <= 8) {
+      timerFill.style.stroke = 'var(--red)';
+    } else if (secondsRemaining <= 16) {
+      timerFill.style.stroke = 'var(--amber)';
+    } else {
+      timerFill.style.stroke = 'var(--green)';
+    }
+  }
+
+  function handleTimeout() {
+    if (session.answered) return;
+    session.answered = true;
+    
+    CyberAudio.play('wrong');
+    const q = session.questions[session.idx];
+
+    Array.from(optList.children).forEach((node, idx) => {
+      node.classList.add('locked');
+      if (idx === q.correctIndex) node.classList.add('correct');
+      node.classList.add('dim');
+    });
+
+    session.streak = 0;
+    qStreak.textContent = session.streak;
+
+    feedback.innerHTML = `
+      <div class="feedback-status error">⚠ ACCESS DENIED — TIME EXPIRED</div>
+      <div class="feedback-correct-answer">Correct Answer: <b>${q.options[q.correctIndex]}</b></div>
+      <div class="feedback-diag">
+        <div class="diag-title">// CONSOLE DIAGNOSTIC REPORT</div>
+        <div class="diag-item"><b>Difficulty:</b> <span class="diff-tag ${q.difficulty.toLowerCase()}">${q.difficulty}</span></div>
+        <div class="diag-item"><b>Topic:</b> ${q.topic}</div>
+        <div class="diag-explanation"><b>Explanation:</b> ${q.explanation}</div>
+        <div class="diag-tip"><b>Memory Tip:</b> <i>${q.tip}</i></div>
+      </div>
+    `;
+    feedback.className = 'feedback-line show no';
+
+    session.results.push({
+      correct: false, qText: q.q, chosen: "[TIMEOUT]", correctAns: q.options[q.correctIndex], timeTaken: 30
+    });
+
+    renderProgressTrack();
+    nextBtn.disabled = false;
+  }
+
+  function startElapsedTimer() {
+    clearInterval(elapsedTimerInterval);
+    elapsedTime = 0;
+    elapsedText.textContent = "00:00";
+    elapsedTimerInterval = setInterval(() => {
+      elapsedTime++;
+      const mins = Math.floor(elapsedTime / 60).toString().padStart(2, '0');
+      const secs = (elapsedTime % 60).toString().padStart(2, '0');
+      elapsedText.textContent = `${mins}:${secs}`;
+    }, 1000);
+  }
+
+  function renderProgressTrack() {
+    progressTrack.innerHTML = '';
+    session.questions.forEach((q, i) => {
+      const seg = document.createElement('div');
+      seg.className = 'progress-seg';
+      if (i < session.results.length) {
+        seg.classList.add(session.results[i].correct ? 'correct' : 'wrong');
+      } else if (i === session.idx) {
+        seg.classList.add('current');
+      }
+      progressTrack.appendChild(seg);
+    });
+  }
+
+  function renderQuestion() {
+    const total = session.questions.length;
+    const q = session.questions[session.idx];
+    qUnitId.textContent = session.unit.id;
+    qUnitTitle.textContent = session.unit.title;
+    qIndex.textContent = session.idx + 1;
+    qTotal.textContent = total;
+    qStreak.textContent = session.streak;
+    qText.textContent = q.q;
+    
+    // Add mark/marks detail
+    qEyebrow.textContent = `// PART A — QUESTION DIAGNOSTICS (${q.difficulty.toUpperCase()})`;
+    
+    feedback.classList.remove('show', 'ok', 'no');
+    feedback.innerHTML = '';
+    nextBtn.disabled = true;
+    nextBtn.textContent = (session.idx === total - 1) ? 'finish_quiz() →' : 'submit_answer()';
+    session.answered = false;
+
+    renderProgressTrack();
+
+    optList.innerHTML = '';
+    const letters = ['A', 'B', 'C', 'D'];
+    q.options.forEach((optText, i) => {
+      const opt = document.createElement('div');
+      opt.className = 'opt';
+      opt.innerHTML = `<span class="k">${letters[i]}</span><span>${optText}</span><span class="key-hint">${letters[i]} / ${i+1}</span>`;
+      opt.addEventListener('click', () => selectOption(i, opt));
+      optList.appendChild(opt);
+    });
+
+    startQuestionTimer();
+  }
+
+  function selectOption(i, el) {
+    if (session.answered) return;
+    clearInterval(questionTimerInterval);
+    session.answered = true;
+    
+    const q = session.questions[session.idx];
+    const correct = i === q.correctIndex;
+    const timeTaken = 30 - secondsRemaining;
+
+    Array.from(optList.children).forEach((node, idx) => {
+      node.classList.add('locked');
+      if (idx === q.correctIndex) node.classList.add('correct');
+      if (idx === i && !correct) node.classList.add('wrong');
+      if (idx !== i && idx !== q.correctIndex) node.classList.add('dim');
+      if (idx === i) node.classList.add('selected');
+    });
+
+    if (correct) {
+      session.score++;
+      session.streak++;
+      session.bestStreak = Math.max(session.bestStreak, session.streak);
+      
+      let xpGained = 10;
+      let streakMsg = "";
+      if (session.streak === 5) { xpGained += 25; streakMsg = " (5 STREAK +25 XP BONUS)"; }
+      else if (session.streak === 10) { xpGained += 50; streakMsg = " (10 STREAK +50 XP BONUS)"; }
+      
+      session.xpEarned += xpGained;
+      progress.xp = (progress.xp || 0) + xpGained;
+      
+      // Weekly XP contribution
+      const currentStart = getStartOfWeekTimestamp();
+      progress.weeklyXp = progress.weeklyXp || { startOfWeek: currentStart, xp: 0 };
+      if (progress.weeklyXp.startOfWeek === currentStart) {
+        progress.weeklyXp.xp += xpGained;
+      }
+      
+      saveProgress();
+      showFloatingXp(xpGained, el);
+      CyberAudio.play('correct');
+
+      feedback.innerHTML = `
+        <div class="feedback-status success">✓ ACCESS GRANTED — +${xpGained} XP ${streakMsg}</div>
+        <div class="feedback-diag">
+          <div class="diag-title">// CONSOLE DIAGNOSTIC REPORT</div>
+          <div class="diag-item"><b>Difficulty:</b> <span class="diff-tag ${q.difficulty.toLowerCase()}">${q.difficulty}</span></div>
+          <div class="diag-item"><b>Topic:</b> ${q.topic}</div>
+          <div class="diag-explanation"><b>Explanation:</b> ${q.explanation}</div>
+          <div class="diag-tip"><b>Memory Tip:</b> <i>${q.tip}</i></div>
+        </div>
+      `;
+      feedback.className = 'feedback-line show ok';
+    } else {
+      session.streak = 0;
+      CyberAudio.play('wrong');
+
+      feedback.innerHTML = `
+        <div class="feedback-status error">✗ ACCESS DENIED — DETECTED EXPLOIT FAILURE</div>
+        <div class="feedback-correct-answer">Correct Answer: <b>${q.options[q.correctIndex]}</b></div>
+        <div class="feedback-diag">
+          <div class="diag-title">// CONSOLE DIAGNOSTIC REPORT</div>
+          <div class="diag-item"><b>Difficulty:</b> <span class="diff-tag ${q.difficulty.toLowerCase()}">${q.difficulty}</span></div>
+          <div class="diag-item"><b>Topic:</b> ${q.topic}</div>
+          <div class="diag-explanation"><b>Explanation:</b> ${q.explanation}</div>
+          <div class="diag-tip"><b>Memory Tip:</b> <i>${q.tip}</i></div>
+        </div>
+      `;
+      feedback.className = 'feedback-line show no';
+    }
+
+    session.results.push({
+      correct, qText: q.q, chosen: q.options[i], correctAns: q.options[q.correctIndex], timeTaken
+    });
+
+    qStreak.textContent = session.streak;
+    renderProgressTrack();
+    nextBtn.disabled = false;
+  }
+
+  nextBtn.addEventListener('click', () => {
+    CyberAudio.play('click');
+    if (session.idx < session.questions.length - 1) {
+      session.idx++;
+      renderQuestion();
+    } else {
+      finishQuiz();
+    }
+  });
+
+  quitBtn.addEventListener('click', () => {
+    CyberAudio.play('click');
+    if (confirm('Abort this quiz session? Progress on this attempt will be lost.')) {
+      clearInterval(elapsedTimerInterval);
+      clearInterval(questionTimerInterval);
+      session = null;
+      showView('dash');
+    }
+  });
+
+  // Confetti rain of binary data
+  function triggerConfetti() {
+    const canvas = document.createElement('canvas');
+    canvas.id = 'confetti-canvas';
+    canvas.style.position = 'fixed';
+    canvas.style.top = '0';
+    canvas.style.left = '0';
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.style.pointerEvents = 'none';
+    canvas.style.zIndex = '998';
+    document.body.appendChild(canvas);
+
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const columns = Math.floor(width / 24);
+    const drops = Array(columns).fill(0);
+    const chars = "01010101#@";
+
+    let cycles = 0;
+    function draw() {
+      ctx.fillStyle = 'rgba(3, 7, 6, 0.05)';
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = '#3ef2a8';
+      ctx.font = '14px var(--font-mono)';
+      ctx.shadowBlur = 6;
+      ctx.shadowColor = '#3ef2a8';
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = chars[Math.floor(Math.random() * chars.length)];
+        ctx.fillText(text, i * 24, drops[i] * 24);
+        if (drops[i] * 24 > height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+      cycles++;
+      if (cycles < 180) {
+        requestAnimationFrame(draw);
+      } else {
+        canvas.style.transition = 'opacity 1s ease';
+        canvas.style.opacity = '0';
+        setTimeout(() => canvas.remove(), 1000);
+      }
+    }
+    draw();
+  }
+
+  function finishQuiz() {
+    clearInterval(elapsedTimerInterval);
+    clearInterval(questionTimerInterval);
+
+    const total = session.questions.length;
+    const pct = Math.round((session.score / total) * 100);
+    const missed = session.results.filter(r => !r.correct);
+
+    const oldRank = getRank(progress.xp);
+
+    // Calculate Completion Bonuses
+    let completionXp = 200;
+    if (session.score === total) { completionXp += 400; } // Perfect Score (+300) + Perfect Unit (+100) = 400
+    
+    session.xpEarned += completionXp;
+    progress.xp = (progress.xp || 0) + completionXp;
+
+    // Update weekly XP goal values
+    const currentStart = getStartOfWeekTimestamp();
+    progress.weeklyXp = progress.weeklyXp || { startOfWeek: currentStart, xp: 0 };
+    if (progress.weeklyXp.startOfWeek === currentStart) {
+      progress.weeklyXp.xp += completionXp;
+    }
+
+    // Persist scores
+    const p = progress[session.unit.id] || { best: 0, attempts: 0, bestStreak: 0, lastMissed: [] };
+    p.attempts++;
+    p.best = Math.max(p.best, session.score);
+    p.bestStreak = Math.max(p.bestStreak, session.bestStreak);
+    p.lastMissed = missed.map(m => m.qText);
+    
+    // Save completion date
+    const today = new Date().toISOString().split('T')[0];
+    progress.completedDates = progress.completedDates || [];
+    if (!progress.completedDates.includes(today)) {
+      progress.completedDates.push(today);
+    }
+
+    saveProgress();
+
+    // Check rank promotion trigger
+    const newRank = getRank(progress.xp);
+
+    // Dynamic result titles based on accuracy
+    let badge, title;
+    if (pct === 100) { badge = '🏆'; title = 'DECRYPTION COMPLETE (100%)'; triggerConfetti(); }
+    else if (pct >= 80) { badge = '🎯'; title = 'ACCESS POINT SECURITY BREACHED'; triggerConfetti(); }
+    else if (pct >= 50) { badge = '🧩'; title = 'PASSABLE EXPLOIT RECORD'; }
+    else { badge = '🔁'; title = 'SHELL INTRUSION FAILED'; }
+
+    resBadge.textContent = badge;
+    resTitle.textContent = title;
+    resSub.textContent = `Unit ${session.unit.id} · ${session.unit.title}`;
+    resScore.innerHTML = `${session.score}<span>/${total}</span>`;
+    resAcc.textContent = pct + '%';
+    resStreak.textContent = session.bestStreak;
+    resMiss.textContent = missed.length;
+    resXpGained.textContent = `+${session.xpEarned} XP`;
+
+    // Render grades
+    const gradeObj = calculateGrade(pct);
+    const scoreGauge = document.querySelector('.result-score-gauge');
+    if (scoreGauge) {
+      scoreGauge.classList.toggle('perfect', pct === 100);
+      let gradeEl = scoreGauge.querySelector('.result-grade');
+      if (!gradeEl) {
+        gradeEl = document.createElement('div');
+        gradeEl.className = 'result-grade';
+        scoreGauge.appendChild(gradeEl);
+      }
+      gradeEl.textContent = gradeObj.name;
+      gradeEl.style.color = gradeObj.color;
+      gradeEl.style.borderColor = gradeObj.color;
+    }
+
+    renderReviewList();
+    showView('results');
+
+    // Rank Promotion Alert
+    if (newRank.name !== oldRank.name) {
+      setTimeout(() => { showRankPromotion(oldRank, newRank); }, 800);
+    }
+  }
+
+  function calculateGrade(pct) {
+    if (pct === 100) return { name: "ROOT ELITE", color: "var(--green)" };
+    if (pct >= 90) return { name: "SYSTEM ADMIN", color: "var(--green)" };
+    if (pct >= 80) return { name: "EXPLOITED", color: "var(--green)" };
+    if (pct >= 70) return { name: "USER ACCESS", color: "var(--amber)" };
+    if (pct >= 50) return { name: "SANDBOX USER", color: "var(--amber)" };
+    return { name: "SANDBOX BLOCKED", color: "var(--red)" };
+  }
+
+  function renderReviewList() {
+    reviewList.innerHTML = '';
+    
+    // Filter items based on current review selection
+    const itemsToRender = currentReviewFilter === 'missed' 
+      ? session.results.filter(r => !r.correct)
+      : session.results;
+
+    if (itemsToRender.length === 0) {
+      const emptyMsg = document.createElement('div');
+      emptyMsg.className = 'review-item correct';
+      emptyMsg.style.textAlign = 'center';
+      emptyMsg.innerHTML = `<span style="color: var(--green);">No reports to show in this view filter mode. All nodes clear!</span>`;
+      reviewList.appendChild(emptyMsg);
+      return;
+    }
+
+    itemsToRender.forEach(res => {
+      const qMeta = getQuestionMetadata(res.qText, session.unit.id);
+      const item = document.createElement('div');
+      item.className = `review-item ${res.correct ? 'correct' : 'wrong'}`;
+      item.innerHTML = `
+        <div class="review-q-row">
+          <div class="review-q">${res.qText}</div>
+          <span class="diff-tag ${qMeta.difficulty.toLowerCase()} review-diff">${qMeta.difficulty}</span>
+        </div>
+        <div class="review-answers">
+          <span>Your Answer: <b class="user-ans ${res.correct ? 'right-ans' : 'wrong-ans'}">${res.chosen}</b></span>
+          ${!res.correct ? `<span>Correct Answer: <b class="correct-ans">${res.correctAns}</b></span>` : ''}
+        </div>
+        <div class="review-explanation-box">
+          <p><b>Topic:</b> ${qMeta.topic}</p>
+          <p><b>Explanation:</b> ${qMeta.explanation}</p>
+          <p><b>Tip:</b> <span style="color: var(--amber); font-style: italic;">${qMeta.tip}</span></p>
+        </div>
+      `;
+      reviewList.appendChild(item);
+    });
+  }
+
+  // Tabs Listeners
+  if (allReviewTab && missedReviewTab) {
+    allReviewTab.addEventListener('click', () => {
+      CyberAudio.play('click');
+      allReviewTab.classList.add('active');
+      missedReviewTab.classList.remove('active');
+      currentReviewFilter = 'all';
+      renderReviewList();
+    });
+    missedReviewTab.addEventListener('click', () => {
+      CyberAudio.play('click');
+      missedReviewTab.classList.add('active');
+      allReviewTab.classList.remove('active');
+      currentReviewFilter = 'missed';
+      renderReviewList();
+    });
+  }
+
+  retryBtn.addEventListener('click', () => {
+    CyberAudio.play('click');
+    startQuiz(session.unit.id);
+  });
+  dashBtn.addEventListener('click', () => {
+    CyberAudio.play('click');
+    session = null;
+    renderDashboard();
+    showView('dash');
+  });
+
+  // Keyboard Shortcuts Handler
+  window.addEventListener('keydown', (e) => {
+    if (viewQuiz.classList.contains('hidden') || session === null) return;
+    const key = e.key.toLowerCase();
+    
+    // Check key clicks
+    if (key === 'a' || key === '1') { selectOptionByIndex(0); }
+    else if (key === 'b' || key === '2') { selectOptionByIndex(1); }
+    else if (key === 'c' || key === '3') { selectOptionByIndex(2); }
+    else if (key === 'd' || key === '4') { selectOptionByIndex(3); }
+    else if (key === 'enter') {
+      if (session.answered) {
+        nextBtn.click();
+      }
+    } else if (key === 'escape') {
+      quitBtn.click();
+    }
+  });
+
+  function selectOptionByIndex(index) {
+    if (session.answered) return;
+    const opts = optList.children;
+    if (opts && opts[index]) {
+      opts[index].click();
+    }
+  }
+
+  // init
+  renderDashboard();
+  showView('dash');
+})();
+</script>
+</body>
+</html>
