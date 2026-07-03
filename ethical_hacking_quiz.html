@@ -659,12 +659,346 @@
   /* Audio toggle button text update */
   .audio-toggle.active::after { content: ''; }
 
+  /* ================= CLASSROOM TRACKING ================= */
+  
+  /* Login Modal */
+  .student-login-modal {
+    position: fixed; inset: 0; background: rgba(10, 14, 39, 0.9); 
+    display: flex; align-items: center; justify-content: center; 
+    z-index: 2500; backdrop-filter: blur(4px);
+  }
+  .student-login-modal.hidden { display: none; }
+  
+  .login-card {
+    background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(96, 165, 250, 0.3);
+    border-radius: 12px; padding: 40px; backdrop-filter: blur(16px);
+    max-width: 400px; width: 90%; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideDownFade 0.4s ease-out;
+  }
+  
+  .login-header {
+    text-align: center; margin-bottom: 30px;
+  }
+  
+  .login-brand {
+    font-family: var(--font-display); font-size: 24px; color: var(--green);
+    text-shadow: 0 0 10px rgba(0, 217, 163, 0.4); margin-bottom: 8px;
+  }
+  
+  .login-subtitle {
+    color: var(--text-dim); font-size: 13px; letter-spacing: 0.5px;
+  }
+  
+  .login-input {
+    width: 100%; padding: 14px 16px; margin-bottom: 16px;
+    background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(96, 165, 250, 0.2);
+    border-radius: 8px; color: var(--text); font-family: var(--font-mono);
+    font-size: 14px; transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .login-input:focus {
+    outline: none; border-color: var(--green);
+    background: rgba(0, 217, 163, 0.08);
+    box-shadow: 0 0 20px rgba(0, 217, 163, 0.2);
+  }
+  
+  .login-btn {
+    width: 100%; padding: 12px; margin-bottom: 16px;
+    background: var(--green); color: var(--text-dark);
+    border: none; border-radius: 8px; font-family: var(--font-display);
+    font-weight: bold; font-size: 14px; cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 15px rgba(0, 217, 163, 0.3);
+  }
+  
+  .login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 217, 163, 0.4);
+  }
+  
+  .login-hint {
+    text-align: center; font-size: 11px; color: var(--text-dim);
+    letter-spacing: 0.5px;
+  }
+  
+  /* Admin Panel */
+  .admin-panel {
+    position: fixed; inset: 0; background: rgba(10, 14, 39, 0.95); 
+    display: flex; align-items: center; justify-content: center; 
+    z-index: 2400; backdrop-filter: blur(8px);
+    padding: 20px;
+  }
+  .admin-panel.hidden { display: none; }
+  
+  .admin-container {
+    background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(96, 165, 250, 0.2);
+    border-radius: 12px; backdrop-filter: blur(16px);
+    width: 100%; max-width: 1000px; max-height: 90vh;
+    overflow-y: auto; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    animation: slideDownFade 0.4s ease-out;
+  }
+  
+  .admin-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px; border-bottom: 1px solid rgba(96, 165, 250, 0.2);
+  }
+  
+  .admin-title {
+    font-family: var(--font-display); font-size: 20px; color: var(--green);
+    text-shadow: 0 0 10px rgba(0, 217, 163, 0.4);
+  }
+  
+  .admin-close-btn {
+    background: transparent; border: none; color: var(--text-dim);
+    font-size: 28px; cursor: pointer; transition: color 0.2s ease;
+  }
+  
+  .admin-close-btn:hover { color: var(--red); }
+  
+  .admin-tabs {
+    display: flex; gap: 0; border-bottom: 1px solid rgba(96, 165, 250, 0.2);
+    padding: 0 24px;
+  }
+  
+  .admin-tab-btn {
+    background: transparent; border: none; color: var(--text-dim);
+    padding: 14px 20px; cursor: pointer; font-family: var(--font-mono);
+    font-size: 12px; letter-spacing: 0.5px; transition: all 0.3s ease;
+    border-bottom: 2px solid transparent;
+  }
+  
+  .admin-tab-btn:hover { color: var(--text); }
+  
+  .admin-tab-btn.active {
+    color: var(--green); border-bottom-color: var(--green);
+    text-shadow: 0 0 8px rgba(0, 217, 163, 0.4);
+  }
+  
+  .admin-tab-content {
+    padding: 24px; display: none;
+  }
+  
+  .admin-tab-content.active { display: block; }
+  
+  .admin-stats-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px; margin-bottom: 24px;
+  }
+  
+  .admin-stat-card {
+    background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(96, 165, 250, 0.2);
+    border-radius: 8px; padding: 16px; backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+  }
+  
+  .admin-stat-card:hover {
+    background: rgba(0, 217, 163, 0.08);
+    border-color: rgba(0, 217, 163, 0.3);
+  }
+  
+  .stat-label { font-size: 12px; color: var(--text-dim); letter-spacing: 0.5px; margin-bottom: 8px; }
+  .stat-value { font-size: 28px; color: var(--green); font-family: var(--font-display); font-weight: bold; }
+  
+  .admin-search-bar {
+    display: flex; gap: 12px; margin-bottom: 20px;
+  }
+  
+  .search-input, .sort-select {
+    background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(96, 165, 250, 0.2);
+    border-radius: 8px; color: var(--text); padding: 10px 14px;
+    font-family: var(--font-mono); font-size: 12px;
+    transition: all 0.3s ease;
+  }
+  
+  .search-input { flex: 1; }
+  .sort-select { min-width: 150px; cursor: pointer; }
+  
+  .search-input:focus, .sort-select:focus {
+    outline: none; border-color: var(--green);
+    background: rgba(0, 217, 163, 0.08);
+  }
+  
+  .student-list {
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  
+  .student-row {
+    background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(96, 165, 250, 0.2);
+    border-radius: 8px; padding: 12px 14px; display: flex; justify-content: space-between;
+    align-items: center; transition: all 0.3s ease;
+  }
+  
+  .student-row:hover {
+    background: rgba(0, 217, 163, 0.1);
+    border-color: rgba(0, 217, 163, 0.3);
+  }
+  
+  .student-info {
+    display: flex; flex-direction: column; flex: 1;
+  }
+  
+  .student-name {
+    font-family: var(--font-display); color: var(--text); font-size: 14px; font-weight: bold;
+  }
+  
+  .student-meta {
+    font-size: 11px; color: var(--text-dim); margin-top: 2px;
+  }
+  
+  .student-actions {
+    display: flex; gap: 8px;
+  }
+  
+  .student-action-btn {
+    background: rgba(96, 165, 250, 0.1); border: 1px solid rgba(96, 165, 250, 0.2);
+    color: var(--text-dim); padding: 6px 12px; border-radius: 4px;
+    font-size: 11px; cursor: pointer; transition: all 0.3s ease;
+  }
+  
+  .student-action-btn:hover {
+    background: rgba(0, 217, 163, 0.15);
+    border-color: var(--green);
+    color: var(--green);
+  }
+  
+  .analytics-container {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
+  
+  .analytics-card {
+    background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(96, 165, 250, 0.2);
+    border-radius: 8px; padding: 20px; backdrop-filter: blur(8px);
+  }
+  
+  .analytics-card h3 {
+    color: var(--green); font-family: var(--font-display); margin-bottom: 16px;
+    font-size: 14px; letter-spacing: 0.5px;
+  }
+  
+  .leaderboard { display: flex; flex-direction: column; gap: 8px; }
+  
+  .leaderboard-item {
+    display: flex; align-items: center; padding: 8px;
+    background: rgba(15, 23, 42, 0.5); border-radius: 4px;
+    font-size: 12px; gap: 10px;
+  }
+  
+  .leaderboard-rank { color: var(--amber); font-weight: bold; min-width: 24px; }
+  .leaderboard-name { flex: 1; color: var(--text); }
+  .leaderboard-score { color: var(--green); font-weight: bold; }
+  
+  #unitStats { display: flex; flex-direction: column; gap: 12px; }
+  
+  .unit-stat-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px; background: rgba(15, 23, 42, 0.5); border-radius: 4px;
+    font-size: 12px;
+  }
+  
+  .unit-name { color: var(--text); flex: 1; }
+  .unit-rate { color: var(--green); font-weight: bold; }
+  
+  .export-section {
+    max-width: 600px;
+  }
+  
+  .export-section h3 {
+    color: var(--green); font-family: var(--font-display);
+    margin-bottom: 16px; font-size: 14px;
+  }
+  
+  .export-buttons {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px; margin-bottom: 16px;
+  }
+  
+  .export-btn {
+    background: rgba(0, 217, 163, 0.1); border: 1px solid rgba(0, 217, 163, 0.3);
+    color: var(--green); padding: 12px; border-radius: 8px;
+    cursor: pointer; transition: all 0.3s ease;
+    font-family: var(--font-mono); font-size: 12px;
+  }
+  
+  .export-btn:hover {
+    background: rgba(0, 217, 163, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 217, 163, 0.2);
+  }
+  
+  .export-hint {
+    font-size: 11px; color: var(--text-dim); letter-spacing: 0.5px;
+  }
+  
+  /* Admin Auth Modal */
+  .admin-auth-modal {
+    position: fixed; inset: 0; background: rgba(10, 14, 39, 0.9);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2600; backdrop-filter: blur(4px);
+  }
+  .admin-auth-modal.hidden { display: none; }
+  
+  .auth-card {
+    background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(96, 165, 250, 0.3);
+    border-radius: 12px; padding: 40px; backdrop-filter: blur(16px);
+    max-width: 350px; width: 90%;
+    animation: slideDownFade 0.4s ease-out;
+  }
+  
+  .auth-header {
+    font-family: var(--font-display); font-size: 18px; color: var(--green);
+    text-shadow: 0 0 10px rgba(0, 217, 163, 0.4);
+    margin-bottom: 24px; text-align: center;
+  }
+  
+  .auth-input {
+    width: 100%; padding: 12px 14px; margin-bottom: 16px;
+    background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(96, 165, 250, 0.2);
+    border-radius: 8px; color: var(--text); font-family: var(--font-mono);
+    font-size: 14px; transition: all 0.3s ease;
+  }
+  
+  .auth-input:focus {
+    outline: none; border-color: var(--green);
+    background: rgba(0, 217, 163, 0.08);
+  }
+  
+  .auth-btn, .auth-btn-cancel {
+    width: 100%; padding: 12px; margin-bottom: 10px;
+    border: none; border-radius: 8px; font-family: var(--font-display);
+    font-weight: bold; font-size: 13px; cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .auth-btn {
+    background: var(--green); color: var(--text-dark);
+    box-shadow: 0 4px 15px rgba(0, 217, 163, 0.3);
+  }
+  
+  .auth-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 217, 163, 0.4);
+  }
+  
+  .auth-btn-cancel {
+    background: transparent; border: 1px solid rgba(248, 113, 113, 0.3);
+    color: var(--red);
+  }
+  
+  .auth-btn-cancel:hover {
+    background: rgba(248, 113, 113, 0.1);
+  }
+
   @media (max-width: 520px) {
     .q-text { font-size: 16px; }
     .result-score { font-size: 34px; }
     .result-score-gauge { width: 120px; height: 120px; }
     .topbar { flex-direction: column; align-items: flex-start; }
     .topbar-actions { width: 100%; justify-content: space-between; }
+    .admin-container { max-width: 100vw; border-radius: 0; }
+    .admin-tabs { flex-wrap: wrap; }
+    .admin-stats-grid { grid-template-columns: 1fr; }
+    .analytics-container { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -2299,5 +2633,460 @@ const QUIZ_DATA = {
   showView('dash');
 })();
 </script>
+
+<!-- CLASSROOM TRACKING SYSTEM -->
+<script>
+(function() {
+  "use strict";
+
+  const ADMIN_PASSWORD = "admin123"; // Can be changed to any secure password
+  const STUDENT_DATA_KEY = "cdtechs_classroom_students_v1";
+
+  // Student Manager
+  class StudentManager {
+    constructor() {
+      this.currentStudent = null;
+      this.loadCurrentStudent();
+    }
+
+    loadCurrentStudent() {
+      const stored = sessionStorage.getItem('current_student');
+      if (stored) this.currentStudent = stored;
+    }
+
+    setCurrentStudent(name) {
+      sessionStorage.setItem('current_student', name);
+      this.currentStudent = name;
+    }
+
+    getAllStudents() {
+      const data = localStorage.getItem(STUDENT_DATA_KEY);
+      return data ? JSON.parse(data) : {};
+    }
+
+    getStudentData(name) {
+      const all = this.getAllStudents();
+      return all[name] || this.createNewStudent(name);
+    }
+
+    createNewStudent(name) {
+      return {
+        name: name,
+        createdAt: new Date().toISOString(),
+        totalXp: 0,
+        accuracy: 0,
+        questionsAnswered: 0,
+        unitsCompleted: 0,
+        unitScores: {},
+        achievements: [],
+        lastAccessed: new Date().toISOString()
+      };
+    }
+
+    saveStudentData(name, data) {
+      const all = this.getAllStudents();
+      all[name] = { ...data, lastAccessed: new Date().toISOString() };
+      localStorage.setItem(STUDENT_DATA_KEY, JSON.stringify(all));
+    }
+
+    syncWithGlobalProgress(progress) {
+      if (!this.currentStudent) return;
+      const data = this.getStudentData(this.currentStudent);
+      data.totalXp = progress.xp || 0;
+      data.questionsAnswered = Object.values(progress).filter(v => v && v.attempts).reduce((sum, u) => sum + (u.attempts || 0) * 10, 0);
+      data.unitsCompleted = Object.values(progress).filter(v => v && v.best > 0).length;
+      
+      for (let i = 1; i <= 5; i++) {
+        if (progress[i] && progress[i].best > 0) {
+          data.unitScores[i] = {
+            best: progress[i].best,
+            attempts: progress[i].attempts,
+            lastAttempt: new Date().toISOString()
+          };
+        }
+      }
+      
+      const totalAnswered = Object.values(data.unitScores).reduce((sum, u) => sum + (u.attempts || 0) * 10, 0);
+      let totalCorrect = 0;
+      for (let i = 1; i <= 5; i++) {
+        if (progress[i] && progress[i].best > 0) {
+          totalCorrect += (progress[i].best || 0);
+        }
+      }
+      data.accuracy = totalAnswered > 0 ? Math.round((totalCorrect / totalAnswered) * 100) : 0;
+      
+      this.saveStudentData(this.currentStudent, data);
+    }
+  }
+
+  const studentManager = new StudentManager();
+
+  // DOM Elements
+  const loginModal = document.getElementById('studentLoginModal');
+  const studentNameInput = document.getElementById('studentName');
+  const startStudentBtn = document.getElementById('startStudentBtn');
+  const adminPanel = document.getElementById('adminPanel');
+  const adminAuthModal = document.getElementById('adminAuthModal');
+  const adminPasswordInput = document.getElementById('adminPassword');
+  const verifyAdminBtn = document.getElementById('verifyAdminBtn');
+  const cancelAdminBtn = document.getElementById('cancelAdminBtn');
+  const closeAdminBtn = document.getElementById('closeAdminBtn');
+
+  // Show login modal on page load
+  function showLoginModal() {
+    // Hide main app content
+    const wrap = document.querySelector('.wrap');
+    if (wrap) wrap.style.display = 'none';
+    loginModal.classList.remove('hidden');
+    studentNameInput.focus();
+  }
+
+  function hideLoginModal() {
+    loginModal.classList.add('hidden');
+    const wrap = document.querySelector('.wrap');
+    if (wrap) wrap.style.display = 'block';
+  }
+
+  startStudentBtn.addEventListener('click', () => {
+    const name = studentNameInput.value.trim();
+    if (name.length < 2) {
+      alert('Please enter your name (at least 2 characters)');
+      return;
+    }
+    studentManager.setCurrentStudent(name);
+    studentNameInput.value = '';
+    // Reload page to properly initialize with student
+    location.reload();
+  });
+
+  studentNameInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') startStudentBtn.click();
+  });
+
+  // Admin Access (Ctrl+Shift+A)
+  window.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+      e.preventDefault();
+      adminAuthModal.classList.remove('hidden');
+      adminPasswordInput.focus();
+    }
+  });
+
+  verifyAdminBtn.addEventListener('click', () => {
+    if (adminPasswordInput.value === ADMIN_PASSWORD) {
+      adminAuthModal.classList.add('hidden');
+      showAdminPanel();
+      adminPasswordInput.value = '';
+    } else {
+      alert('Invalid password');
+      adminPasswordInput.value = '';
+    }
+  });
+
+  cancelAdminBtn.addEventListener('click', () => {
+    adminAuthModal.classList.add('hidden');
+    adminPasswordInput.value = '';
+  });
+
+  adminPasswordInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') verifyAdminBtn.click();
+  });
+
+  closeAdminBtn.addEventListener('click', () => {
+    adminPanel.classList.add('hidden');
+  });
+
+  // Admin Panel Functions
+  function showAdminPanel() {
+    adminPanel.classList.remove('hidden');
+    updateAdminOverview();
+    setupAdminTabs();
+  }
+
+  function updateAdminOverview() {
+    const students = studentManager.getAllStudents();
+    const studentList = Object.values(students);
+    
+    document.getElementById('adminTotalStudents').textContent = studentList.length;
+    
+    const avgScore = studentList.length > 0 
+      ? Math.round(studentList.reduce((sum, s) => sum + (s.accuracy || 0), 0) / studentList.length)
+      : 0;
+    document.getElementById('adminAvgScore').textContent = avgScore + '%';
+    
+    const completedUnits = studentList.reduce((sum, s) => sum + (s.unitsCompleted || 0), 0);
+    document.getElementById('adminCompletedUnits').textContent = completedUnits;
+    
+    const totalXp = studentList.reduce((sum, s) => sum + (s.totalXp || 0), 0);
+    document.getElementById('adminTotalXp').textContent = totalXp;
+  }
+
+  function setupAdminTabs() {
+    document.querySelectorAll('.admin-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(`tab-${tab}`).classList.add('active');
+        
+        if (tab === 'students') renderStudentList();
+        if (tab === 'analytics') renderAnalytics();
+      });
+    });
+  }
+
+  function renderStudentList() {
+    const students = Object.values(studentManager.getAllStudents());
+    const searchTerm = document.getElementById('studentSearchInput').value.toLowerCase();
+    const sortBy = document.getElementById('sortBySelect').value;
+    
+    let filtered = students.filter(s => s.name.toLowerCase().includes(searchTerm));
+    
+    if (sortBy === 'name') {
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortBy === 'score') {
+      filtered.sort((a, b) => (b.accuracy || 0) - (a.accuracy || 0));
+    } else if (sortBy === 'xp') {
+      filtered.sort((a, b) => (b.totalXp || 0) - (a.totalXp || 0));
+    }
+    
+    const list = document.getElementById('studentList');
+    list.innerHTML = '';
+    
+    if (filtered.length === 0) {
+      list.innerHTML = '<div style="text-align: center; color: var(--text-dim); padding: 20px;">No students found</div>';
+      return;
+    }
+    
+    filtered.forEach(student => {
+      const row = document.createElement('div');
+      row.className = 'student-row';
+      row.innerHTML = `
+        <div class="student-info">
+          <div class="student-name">${student.name}</div>
+          <div class="student-meta">Accuracy: ${student.accuracy || 0}% · XP: ${student.totalXp || 0} · Units: ${student.unitsCompleted || 0}</div>
+        </div>
+        <div class="student-actions">
+          <button class="student-action-btn" onclick="alert('Details for ${student.name}: \\n\\nAccuracy: ${student.accuracy || 0}%\\nTotal XP: ${student.totalXp || 0}\\nUnits Completed: ${student.unitsCompleted || 0}\\nQuestions Answered: ${student.questionsAnswered || 0}')">VIEW</button>
+          <button class="student-action-btn" onclick="resetStudentProgress('${student.name}')">RESET</button>
+          <button class="student-action-btn" onclick="deleteStudent('${student.name}')">DELETE</button>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+  }
+
+  function renderAnalytics() {
+    const students = Object.values(studentManager.getAllStudents());
+    
+    // Leaderboard
+    const sorted = [...students].sort((a, b) => (b.accuracy || 0) - (a.accuracy || 0)).slice(0, 10);
+    const leaderboard = document.getElementById('leaderboard');
+    leaderboard.innerHTML = '';
+    
+    sorted.forEach((s, idx) => {
+      const item = document.createElement('div');
+      item.className = 'leaderboard-item';
+      item.innerHTML = `
+        <div class="leaderboard-rank">#${idx + 1}</div>
+        <div class="leaderboard-name">${s.name}</div>
+        <div class="leaderboard-score">${s.accuracy || 0}%</div>
+      `;
+      leaderboard.appendChild(item);
+    });
+    
+    // Unit Stats
+    const unitStats = document.getElementById('unitStats');
+    unitStats.innerHTML = '';
+    
+    for (let i = 1; i <= 5; i++) {
+      const completed = students.filter(s => s.unitScores && s.unitScores[i]).length;
+      const rate = students.length > 0 ? Math.round((completed / students.length) * 100) : 0;
+      const row = document.createElement('div');
+      row.className = 'unit-stat-row';
+      row.innerHTML = `<div class="unit-name">Unit ${i}</div><div class="unit-rate">${rate}% completed</div>`;
+      unitStats.appendChild(row);
+    }
+  }
+
+  // Search and Sort
+  document.getElementById('studentSearchInput').addEventListener('input', renderStudentList);
+  document.getElementById('sortBySelect').addEventListener('change', renderStudentList);
+
+  // Export Functions
+  document.getElementById('exportJsonBtn').addEventListener('click', () => {
+    const data = studentManager.getAllStudents();
+    const json = JSON.stringify(data, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    downloadFile(blob, 'classroom_data.json');
+  });
+
+  document.getElementById('exportCsvBtn').addEventListener('click', () => {
+    const students = Object.values(studentManager.getAllStudents());
+    let csv = 'Name,Accuracy,Total XP,Units Completed,Questions Answered,Created At\n';
+    students.forEach(s => {
+      csv += `"${s.name}",${s.accuracy || 0},${s.totalXp || 0},${s.unitsCompleted || 0},${s.questionsAnswered || 0},"${s.createdAt}"\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    downloadFile(blob, 'classroom_data.csv');
+  });
+
+  document.getElementById('exportExcelBtn').addEventListener('click', () => {
+    alert('Excel export requires a library. For now, please use CSV export and open in Excel.');
+  });
+
+  function downloadFile(blob, filename) {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  }
+
+  // Helper Functions
+  window.resetStudentProgress = function(name) {
+    if (confirm(`Reset progress for ${name}?`)) {
+      const all = studentManager.getAllStudents();
+      all[name] = studentManager.createNewStudent(name);
+      localStorage.setItem(STUDENT_DATA_KEY, JSON.stringify(all));
+      renderStudentList();
+    }
+  };
+
+  window.deleteStudent = function(name) {
+    if (confirm(`Delete ${name} permanently?`)) {
+      const all = studentManager.getAllStudents();
+      delete all[name];
+      localStorage.setItem(STUDENT_DATA_KEY, JSON.stringify(all));
+      renderStudentList();
+    }
+  };
+
+  // Auto-sync progress when quiz completes
+  const originalFinishQuiz = window.finishQuiz;
+  if (originalFinishQuiz) {
+    window.finishQuiz = function() {
+      originalFinishQuiz.call(this);
+      const progressKey = 'cdtechs_ethhack_quiz_progress_v1';
+      const progress = JSON.parse(localStorage.getItem(progressKey) || '{}');
+      studentManager.syncWithGlobalProgress(progress);
+    };
+  }
+
+  // Show login on first load - delay to ensure DOM is ready
+  setTimeout(() => {
+    if (!studentManager.currentStudent) {
+      showLoginModal();
+    }
+  }, 100);
+})();
+</script>
+
+<!-- STUDENT LOGIN MODAL -->
+<div id="studentLoginModal" class="student-login-modal hidden">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-brand">🎓 CLASSROOM MODE</div>
+      <div class="login-subtitle">Enter your name to begin</div>
+    </div>
+    <input type="text" id="studentName" class="login-input" placeholder="Your Full Name" maxlength="50" autocomplete="off">
+    <button id="startStudentBtn" class="login-btn">START QUIZ</button>
+    <div class="login-hint">Your progress will be saved locally.</div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel" class="admin-panel hidden">
+  <div class="admin-container">
+    <div class="admin-header">
+      <div class="admin-title">🔐 ADMIN DASHBOARD</div>
+      <button id="closeAdminBtn" class="admin-close-btn">×</button>
+    </div>
+    
+    <div class="admin-tabs">
+      <button class="admin-tab-btn active" data-tab="overview">OVERVIEW</button>
+      <button class="admin-tab-btn" data-tab="students">STUDENTS</button>
+      <button class="admin-tab-btn" data-tab="analytics">ANALYTICS</button>
+      <button class="admin-tab-btn" data-tab="export">EXPORT</button>
+    </div>
+
+    <!-- OVERVIEW TAB -->
+    <div class="admin-tab-content active" id="tab-overview">
+      <div class="admin-stats-grid">
+        <div class="admin-stat-card">
+          <div class="stat-label">Total Students</div>
+          <div class="stat-value" id="adminTotalStudents">0</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="stat-label">Avg Score</div>
+          <div class="stat-value" id="adminAvgScore">0%</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="stat-label">Units Completed</div>
+          <div class="stat-value" id="adminCompletedUnits">0</div>
+        </div>
+        <div class="admin-stat-card">
+          <div class="stat-label">Total XP Earned</div>
+          <div class="stat-value" id="adminTotalXp">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STUDENTS TAB -->
+    <div class="admin-tab-content" id="tab-students">
+      <div class="admin-search-bar">
+        <input type="text" id="studentSearchInput" class="search-input" placeholder="Search students...">
+        <select id="sortBySelect" class="sort-select">
+          <option value="name">Sort by Name</option>
+          <option value="score">Sort by Score</option>
+          <option value="xp">Sort by XP</option>
+        </select>
+      </div>
+      <div class="student-list" id="studentList"></div>
+    </div>
+
+    <!-- ANALYTICS TAB -->
+    <div class="admin-tab-content" id="tab-analytics">
+      <div class="analytics-container">
+        <div class="analytics-card">
+          <h3>Top Performers</h3>
+          <div class="leaderboard" id="leaderboard"></div>
+        </div>
+        <div class="analytics-card">
+          <h3>Unit Completion Rate</h3>
+          <div id="unitStats"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPORT TAB -->
+    <div class="admin-tab-content" id="tab-export">
+      <div class="export-section">
+        <h3>Export Student Data</h3>
+        <div class="export-buttons">
+          <button id="exportJsonBtn" class="export-btn">📄 Export as JSON</button>
+          <button id="exportCsvBtn" class="export-btn">📊 Export as CSV</button>
+          <button id="exportExcelBtn" class="export-btn">📈 Export as Excel</button>
+        </div>
+        <div class="export-hint">Download all student progress data for analysis or backup.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN PASSWORD MODAL -->
+<div id="adminAuthModal" class="admin-auth-modal hidden">
+  <div class="auth-card">
+    <div class="auth-header">🔑 ADMIN AUTHENTICATION</div>
+    <input type="password" id="adminPassword" class="auth-input" placeholder="Enter admin password" autocomplete="off">
+    <button id="verifyAdminBtn" class="auth-btn">VERIFY</button>
+    <button id="cancelAdminBtn" class="auth-btn-cancel">CANCEL</button>
+  </div>
+</div>
+
 </body>
 </html>
