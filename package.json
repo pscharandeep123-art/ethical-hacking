@@ -1,0 +1,9 @@
+{
+  "name": "ethical-hacking-quiz-classroom",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Ethical Hacking Quiz with classroom tracking (Vercel Blob JSON storage)",
+  "dependencies": {
+    "@vercel/blob": "^1.0.0"
+  }
+}
